@@ -10,6 +10,7 @@ IMGSTATICDIR=img/static
 FILES =	elementos_esfera.pkg.sty\
 	elementos_esfera.defs.sty\
 	portada/portada.tex\
+	tablacontenidos/tablacontenidos.tex\
 	texto/esferas.tex\
 	texto/meridianos.tex\
 	texto/paralelos.tex\
