@@ -35,14 +35,12 @@ return {
       {phiD = -150}
    },
 
-   
-   -- 3. Paralelos
+   -- 4. Paralelos
    paralprops = {
       loops = 240, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
    },
 
-   -- 4. Paralelos
    paralelos = {
       {thetaD = 30},
       {thetaD = 60},
@@ -57,7 +55,7 @@ return {
       color_novis = "black!40", radio_novis="1pt",
    },
 
-   -- 6. 
+   -- 6. Arcos máximos de prueba 
    arcmaxprops2 = {
       loops = 240,
       color_vis = "red", lw_vis = "1pt",
@@ -65,8 +63,7 @@ return {
    },
    
    arcosmax2 = {
-      {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, phiD = 0,
-       giro= "m"},
+      {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, giro= "m"},
       --(theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180, giro=1},
    },
 
