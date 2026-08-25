@@ -1,0 +1,335 @@
+% meridianos.tex
+
+\chapter{Meridianos}
+
+Para representar uno o más meridianos en la esfera, tenemos que utilizar el comando:
+\begin{center}
+  {\small\texttt{\textbackslash dibujaTikZEsfera[true o false]}}
+\end{center}
+Para representar los meridianos, el comando Lua\LaTeX\ anterior necesita saber si la
+esfera es transparente o no. Esto es necesario, pues en caso de que lo sea, se pueden
+ver los meridianos que serían tapados por la esfera.
+
+Por tanto, hay que indicar, entre corchetes, \texttt{true} si es transparente o
+\texttt{false}, si es opaca.
+Si no se detallara ningún argumento, el valor por defecto sería \texttt{false} lo que
+indicaría que la esfera es opaca, por lo que no dejaría ver los elementos que se
+encuentran tapados.
+
+Con el comando anterior se leen, además de \texttt{esfera}, oros campos o subtablas,
+como \texttt{'observador'}, \texttt{'meridprops'} y \texttt{'meridianos'} para representar
+meridianos, pues su representación dependería del ángulo de observación de la esfera:
+
+\begin{enumerate}
+\item El campo \texttt{'observador'} define la vista de un observador situado muy lejos
+  de la esfera, definida por las coordenadas angulares esféricas polar $\theta$ y
+  azimutal $\phi$ en grados:
+  \begin{itemize}
+    \setlist[itemize]{noitemsep}\vspace*{-1ex}
+  \item \texttt{thetaD}: Ángulo polar de observación de la esfera, en grados.
+  \item \texttt{phiD}: Ángulo azimutal de observación, en grados.
+  \end{itemize}
+\item El campo \texttt{'meridprops'} define propiedades visuales por defecto del dibujo
+  de los meridianos, y otras de la parte \emph{visible} y la \emph{invisible} de los
+  meridianos (si la esfera fuera opaca):
+  \begin{itemize}
+    \setlist[itemize]{noitemsep}\vspace*{-1ex}
+  \item \texttt{loops}: Cuántas veces se repite el bucle de trazado de cada meridano
+    (de cuantos puntos consta cada meridiano).
+  \item \texttt{color\_vis}: Color reservado para el dibujo de la parte \emph{visible}.
+  \item \texttt{lw\_vis}: Grosor de línea de la parte \emph{visible}.
+  \item \texttt{color\_novis}: Color reservado para el dibujo de la parte
+    \emph{invisible}.
+  \item \texttt{lw\_novis}: Grosor de línea de la parte \emph{invisible} (dimensión
+    \LaTeX , preferiblemente en puntos (\unit{pt}))
+  \end{itemize}  
+\item El campo \texttt{'meridianos'}, define el ángulo azimutal $\phi$ que define la
+  longitud en grados del meridiano:
+  \begin{itemize}
+        \setlist[itemize]{noitemsep}\vspace*{-1ex}
+        \item \texttt{phiD}: Ángulo azimutal que define el meridiano, en grados (número)
+        \end{itemize}
+        Además del valor anterior, se puede destacar más o menos uno o más meridianos
+        con respecto a los demás, añadiendo todos o alguno de los valores del
+        campo \texttt{'meridprops'}. Ya veremos esto en algún ejemplo.
+\end{enumerate}
+
+Veamos uno por uno los campos en los ficheros que mostraremos en los siguientes
+ejemplos, \texttt{esf\_merid\_01.lua} y \texttt{esf\_merid\_02.lua}:
+
+\vspace{1ex}
+CAMPO \texttt{'observador'}:
+
+\begin{tabular}{|@{\hspace{-0.8em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[style=myLuastyle]
+    observador = {thetaD = 65, phiD = 15},
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\vspace{1ex}
+CAMPO \texttt{'meridprops'}:
+
+\begin{tabular}{|@{\hspace{-0.8em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[style=myLuastyle]
+   meridprops = {
+      loops = 120, color_vis = "black!60", lw_vis="0.4pt",
+      color_novis = "black!30", lw_novis="0.3pt",
+   },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\vspace{1ex}
+CAMPO \texttt{'meridianos'}:
+
+\begin{tabular}{|@{\hspace{-0.8em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[style=myLuastyle]
+   meridianos = {
+     {phiD = 0,}, {phiD = 30}, {phiD = 60},
+     {phiD = 90}, {phiD = 120}, {phiD = 150},
+     {phiD = 180}, {phiD = -30}, {phiD = -60},
+     {phiD = -90}, {phiD = -120},{phiD = -150}
+   },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+
+En el fichero \texttt{esf\_merid\_01.lua} se define una esfera plana:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,},
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+La rutina de trazado de meridianos se encarga de dibujar primero la parte
+\emph{invisible} (en caso de que la esfera sea translúcida), y solo después,
+la parte \emph{visible}.
+
+Para no repetir el mismo código, resaltaremos el fichero de datos y el comando
+\LaTeX\ que utilizamos Para una esfera opaca sería:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    \cargaDatos{datoslua/esf_merid_01.lua}
+        ...   
+        \dibujaTikzEsfera
+        ...
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+El fichero \texttt{esf\_merid\_02.lua}, define una esfera sombreada (el resto de
+campos es el mismo que en el fichero \texttt{esf\_merid\_01.lua}:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,},
+   smbresfera = {color="gray!1", opac=0.2},
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+A continuación se muestran las dos esferas:
+
+ \begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \cargaDatos{datoslua/esf_merid_01.lua}
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+    \caption{Esfera plana.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\linewidth}
+    \cargaDatos{datoslua/esf_merid_02.lua}
+     \centering
+     \begin{tikzpicture}[scale=1.0,]
+       \dibujaTikzEsfera
+     \end{tikzpicture}
+     \caption{Esfera sombreada.}
+   \end{minipage}
+   \caption{Esferas opacas.}
+ \end{figure}
+
+
+Ahora dibujamos las mismas esferas y meridianos, pero considerando que son translúcidas
+(añadiendo \texttt{true} al comando: \texttt{\textbackslash dibujaTikzEsfera[true]}
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \cargaDatos{datoslua/esf_merid_01.lua}
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera[true]
+    \end{tikzpicture}
+    \caption{Esfera plana.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\linewidth}
+    \cargaDatos{datoslua/esf_merid_02.lua}
+    \centering
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera[true]
+    \end{tikzpicture}
+    \caption{Esfera sombreada.}
+  \end{minipage}
+  \caption{Esferas translúcidas.}
+\end{figure}
+
+Otras figuras:
+
+En la siguientes figuras opacas resaltamos un meridiano.
+Para ello, utilizamos el fichero \texttt{esf\_meridres\_01.lua} para la esfera
+gris:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    meridprops = {
+      loops = 120, color_vis = "black!60", lw_vis="0.4pt",
+      color_novis = "black!30", lw_novis="0.3pt",
+    },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+Se puede observar que para esta esfera se resaltan de rojo los puntos visibles y
+naranja los invisibles, los meridianos \qty{0}{\degree} y \qty{180}{\degree}:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    meridianos = {
+      {phiD = 0,
+        color_vis="red", lw_vis="0.8pt", color_novis="orange", lw_novis="0.8pt"},
+      {phiD = 30}, {phiD = 60}, {phiD = 90}, {phiD = 120}, {phiD = 150},
+      {phiD = 180,
+        color_vis="red", lw_vis="0.8pt", color_novis="orange", lw_novis="0.8pt"},
+      {phiD = -30}, {phiD = -60}, {phiD = -90},  {phiD = -120}, {phiD = -150}
+    },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+Para la verde utilizamos \texttt{esf\_meridres\_02.lua}:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    meridprops = {
+      loops = 120, color_vis = "black!80", lw_vis="0.6pt",
+      color_novis = "black!40", lw_novis="0.5pt",
+    },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+Para la esfera verde se resaltan de rojo los puntos visibles y en  naranja los
+invisibles, los meridianos \qty{-30}{\degree} y \qty{150}{\degree}:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    meridianos = {
+      {phiD = 0,}, {phiD = 30}, {phiD = 60}, {phiD = 90}, {phiD = 120},
+      {phiD = 150,
+        color_vis="red", lw_vis="1pt", color_novis="orange", lw_novis="1pt"},
+      {phiD = 180},
+      {phiD = -30,
+        color_vis="red", lw_vis="1pt", color_novis="orange", lw_novis="1pt"},
+      {phiD = -60}, {phiD = -90}, {phiD = -120}, {phiD = -150}
+    },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \cargaDatos{datoslua/esf_meridres_01.lua}
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+    \caption{Esfera gris.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\linewidth}
+    \cargaDatos{datoslua/esf_meridres_02.lua}
+    \centering
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+    \caption{Esfera verde.}
+  \end{minipage}
+  \caption{Esferas opacas con dos meridianos resaltados.}
+\end{figure}
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \cargaDatos{datoslua/esf_meridres_01.lua}
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera[true]
+    \end{tikzpicture}
+    \caption{Esfera gris.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\linewidth}
+    \cargaDatos{datoslua/esf_meridres_02.lua}
+    \centering
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera[true]
+    \end{tikzpicture}
+    \caption{Esfera verde.}
+  \end{minipage}
+  \caption{Esferas translúcidas con dos meridianos resaltados.}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-engine: luatex
+%%% TeX-master: "../elementos_esfera.tex"
+%%% End:
+
+

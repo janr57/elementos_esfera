@@ -1,0 +1,297 @@
+% esferas.tex
+
+\chapter{Esferas}
+
+En este texto veremos como representar distintos tipos de elementos sobre una esfera.
+
+Para conseguirlo, se utiliza Lua\LaTeX , apoyado por el lenguaje \textsf{Lua}.
+El propio formato del código fuente de este documento, puede servir para adaptarlo a
+cualquier otra situación que necesite el usuario.
+
+Utilizamos tres elementos importantes, que son los datos que se interpretan como
+instrucciones para realizar una esfera y sus elementos concretos, el código fuente que
+ejecuta esas instrucciones, y por último el programa \LaTeX\ que da la orden inicial para
+que se obtenga el dibujo.   Se recomienda estudiar el código fuente
+
+\begin{enumerate}
+\item DATOS:
+
+  Los datos contienen la información que define una esfera con sus elementos,
+  como pueden ser meridianos, paralelos, segmentos de paralelo, arcos máximos, puntos,
+  planos tangente y vectores en estos planos.
+  
+  Estos datos se encuentran como tablas \textsf{Lua}  en ficheros que, por comodidad se
+  encuentran en un determinado directorio. En estos ejemplos es \texttt{'datoslua'}, pero
+  podría ser cualquier otro que quiera el usuario.
+
+  Es importante entender que se dibujarán todos los elementos que tengan imagen gráfica,
+  y que se encuentren en el fichero de datos.
+  
+\item FUNCIONES:
+
+  Las funciones Lua se encuentran en el fichero
+  \texttt{lua/funciones\_esfera.lua}.
+  
+  La función principal es \texttt{lua/dibuja\_tikzesfera}, que según los datos
+  que se le proporcionen, utilizará las funciones auxiliares que se necesiten.
+
+\item Lua\LaTeX :
+
+  Este será el lenguaje que organice el texto y las imágenes.
+  Por ser un lenguaje general de confección de textos, se pueden utilizar los paquetes
+  que se necesite, dentro del inmenso catálogo de ellos que hay a su disposición.
+
+  El fichero principal de este documento es \texttt{esferas.tex}, que se encarga de
+  organizar la estructura del documento.
+  
+  Para dibujar esferas con sus elementos, se utiliza el paquete \textsf{TikZ}, que se
+  carga en el fichero de carga \texttt{esferas.pkg.sty} junto con otros que le pueden
+  servir de complemento.
+
+  Además, en el fichero de configuración y definiciones, \texttt{esferas.defs.sty},
+  contiene, entre otros, el \LaTeX\ que se encargan de encontrar las funciones
+  \textsf{Lua}, el comando \texttt{\textbackslash cargaDatos} que utiliza el fichero de
+  datos que se le pasa como argumento, y \texttt{\textbackslash dibujaTikzEsfera}, que
+  llama a la función \textsf{Lua} principal.
+
+  Estos tres ficheros se encuentran en el directorio raíz.
+\end{enumerate}
+
+Aquí nos prepararemos para representar una esfera desprovista de elementos.
+
+\section{Esferas planas}
+La \emph{esfera plana} se representa mediante un círculo.
+El campo \texttt{'esfera'} es el que se encarga de su representación.
+Este consta de los siguientes valores:
+
+\vspace{1ex}
+CAMPO \texttt{'esfera'}:
+\begin{itemize}
+  \setlist[itemize]{noitemsep}\vspace*{-1ex}
+\item \texttt{'radio'}: Radio de la circunferencia en \unit{cm} (número).
+\item \texttt{'draw'}: Indica el color que se utilizará para el borde del círculo
+  (cadena de texto).
+\item \texttt{'lw'}: Grosor del borde de la esfera en dimensiones \LaTeX\ '\unit{pt}'
+  (cadena de texto). Ejemplo: \texttt{"0.8pt"}.
+\item \texttt{'fill'}: Color de relleno del círculo (cadena de texto).
+  \item \texttt{'opac'}: Opacidad del relleno (número de 0 a 1).
+\end{itemize}
+
+Lo encontramos en \texttt{'esf\_bas\_01.lua'} y lo cargamos:
+Lo cargamos en Lua\LaTeX\ así:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    \cargaDatos{datoslua/esf_bas_01.lua}
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+El campo o subtabla \texttt{'esfera'} en el fichero de datos pone:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {
+      radio=2.0, draw="black!30", lw= "0.4pt", fill="black!10", opac=1.0,
+   },
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\vspace{1ex}
+El código para  generar la imagen de la esfera podría ser el siguiente, aunque se
+pueden utilizar otras variantes de Lua\LaTeX :
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    \cargaDatos{datoslua/esf_bas_01.lua}
+    \begin{figure}[ht]
+      \begin{center}
+        \begin{tikzpicture}[scale=1.0]
+          \dibujaTikzEsfera
+        \end{tikzpicture}
+      \end{center}
+      \caption{Esfera básica plana, con contorno y relleno.} 
+    \end{figure}
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+El resultado se aprecia en la figura \ref{fig:esf-bas_plana1}
+
+\begin{figure}[ht]
+  \centering
+  \cargaDatos{datoslua/esf_bas_01.lua}
+  \begin{tikzpicture}[scale=1.0,]
+    \dibujaTikzEsfera
+  \end{tikzpicture}
+  \caption{Esfera básica plana, con contorno y relleno.}
+  \label{fig:esf-bas_plana1}
+\end{figure}
+
+ 
+Si desactivamos \texttt{fill = "--"}, conseguiremos una circunferencia sin relleno,
+como se comprueba en el fichero \texttt{esf\_bas\_02.lua}:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {radio=2.0, draw="black!40", lw="0.8pt", fill="--" , opac=1.0,},    
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+Pero, si desactivamos \texttt{draw = "--"}, como en \texttt{esf\_bas\_03.lua}, tendríamos
+una esfera sin contorno, con solo relleno:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {radio=2.0, draw="--", lw="0.8pt", fill="black!10" , opac=1.0,},    
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\vspace{1ex}
+Ambas esferas se pueden ver reunidas en la figura \ref{fig:esf-bas_plana23}:
+ 
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \cargaDatos{datoslua/esf_bas_02.lua}
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \cargaDatos{datoslua/esf_bas_03.lua}
+    \centering
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+  \end{minipage}
+  \caption{A la izquierda, esfera sin relleno. A la derecha sin contorno.}
+  \label{fig:esf-bas_plana23}
+\end{figure}
+
+
+\section{Esferas con sombreado}
+Para dotar a la esfera de perspectiva, se puede añadir un cierto efecto de sombreado a
+través del campo \texttt{'smbresfera'}, que complementa al campo \texttt{'esfera'}, que
+define el valor \texttt{'radio'} necesario para el dibujo de la esfera.
+Este campo tiene los siguientes valores:
+
+\vspace{1ex}
+CAMPO \texttt{'smbresfera'}:
+\begin{itemize}
+  \setlist[itemize]{noitemsep}\vspace*{-1ex}
+\item \texttt{'ballcolor'}: Indica el color del reflejo en la esfera.
+  (cadena de texto).
+  \item \texttt{'opac'}: Opacidad del relleno (número de 0 a 1).
+\end{itemize}
+
+En el fichero de datos \texttt{esf\_bas\_02.lua}, los campos \texttt{'esfera'} y \texttt{'smbresfera'} tienen:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {radio=2.0, draw="white", lw="0pt", fill="white", opac=0,},
+   smbresfera = {ballcolor="green!50", opac=0.35},
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\vspace{1ex}
+El código para  generar la imagen de la esfera podría ser el siguiente, aunque se
+pueden utilizar otras variantes de Lua\LaTeX :
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+    \cargaDatos{datoslua/esf_bas_02.lua}
+    \begin{figure}[ht]
+      \begin{center}
+        \begin{tikzpicture}[scale=1.0]
+          \dibujaTikzEsfera
+        \end{tikzpicture}
+      \end{center}
+      \caption{Esfera básica plana.} 
+    \end{figure}
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+\vspace{1ex}
+Como resultado,
+%figura \ref{fig:esf-sombr_verde},
+se genera una superficie esférica
+limpia, pues el campo \texttt{'esfera'} es el único en el fichero de datos.
+
+\vspace{1ex}
+Si cambiamos los valores de los campos, como en \texttt{esf\_bas\_03.lua}:
+
+\vspace{1ex}
+\begin{tabular}{|@{\hspace{-1em}}c|}\hline
+  \vphantom{\rule{0.4pt}{3ex}}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, language=TeX]
+   esfera = {radio=2.0, draw="white", lw= "0pt", fill="white", opac=0,},
+   smbresfera = {ballcolor="white", opac=0.35},
+  \end{lstlisting}
+  \\[1ex]
+  \hline
+\end{tabular}
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \cargaDatos{datoslua/esf_smbr_01.lua}
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \cargaDatos{datoslua/esf_smbr_02.lua}
+    \centering
+    \begin{tikzpicture}[scale=1.0,]
+      \dibujaTikzEsfera
+    \end{tikzpicture}
+  \end{minipage}
+  \caption{Esferas sombreadas que muestran una cierta perspectiva, en verde y en gris.}
+  \label{fig:esf-sombreadas}
+\end{figure}
+
+
+
+
+
+
+
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-engine: luatex
+%%% TeX-master: "../elementos_esfera.tex"
+%%% End:
+
+

@@ -1,0 +1,200 @@
+% elementos_esfera.defs.sty
+
+% ---------------------------------------------------------------------------------
+% MACROS LUA
+
+% LUA PATH
+\begin{luacode*}
+  -- Añado mi directorio al path
+  package.path = "./?.lua;" .. package.path
+
+  -- Cargo mi proyecto
+  fEsfera = require("lua/funciones_esfera")
+  
+\end{luacode*}
+
+\directlua{
+  % Variable global para los datos actuales
+  escenarioActivo = {}
+
+  % Función global de interfaz para cambiar de datos
+  function carga_escenario(fichero)
+      escenarioActivo = dofile(fichero)
+  end
+}
+
+
+% DEFINICIÓN DE COMANDOS
+
+% --- COMANDOS LATEX LIMPIOS ---
+\newcommand{\cargaDatos}[1]{%
+  \directlua{carga_escenario("#1")}
+}
+
+
+% \dibujaEsferaCompleta
+\newcommand{\dibujaTikzEsfera}[1][false]{%
+  \directlua{fEsfera.dibuja_tikzesfera(#1, escenarioActivo)}
+}
+
+
+%% \dibujaEsferaBase
+%\newcommand{\dibujaEsferaBase}{%
+%  \directlua{fEsfera.dibuja_esfera_base(escenarioActivo)}
+%}
+%
+%% \dibujaEsferaCompleta
+%\newcommand{\dibujaEsferaCompleta}[1][false]{%
+%  \directlua{fEsfera.dibuja_esfera_completa(#1, escenarioActivo)}
+%}
+%
+%% \dibujaMeridianos
+%% Valor por defecto: false, lo que indica que la esfera no es translúcida
+%\newcommand{\dibujaMeridianos}[1][false]{%
+%  \directlua{fEsfera.dibuja_esfera_meridianos(#1,escenarioActivo)}
+%}
+%
+%% \dibujaParalelos
+%% Valor por defecto: false, lo que indica que la esfera no es translúcida
+%\newcommand{\dibujaParalelos}[1][false]{%
+%  \directlua{fEsfera.dibuja_esfera_paralelos(#1,escenarioActivo)}
+%}
+
+
+%\newcommand{\dibujaEsfera}{%
+%  \directlua{fEsfera.dibuja_esfera(escenarioActivo)}
+%}
+%
+%
+%\newcommand{\dibujaParalelos}{%
+%  \directlua{fEsfera.dibuja_paralelos(escenarioActivo)}
+%}
+
+
+
+
+
+% LISTINGS PARA LUA
+\lstdefinestyle{myLuastyle}
+{
+  language         = {[5.0]Lua},
+  basicstyle       = \ttfamily\footnotesize,
+  showstringspaces = false,
+  upquote          = true,
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% Macros de LaTeX
+%\newcommand{\DEBUGEsf}[3]{%
+%  \directlua{mEsfera.DEBUGesf(#1, #2, #3)}
+%}
+%
+%\newcommand{\DEBUGObs}[1]{%
+%  \directlua{mEsfera.DEBUGobs(#1)}
+%}
+%
+%\newcommand{\DEBUGPuntosProp}[1]{%
+%  \directlua{mEsfera.DEBUGpuntosprop(#1)}
+%}
+%
+%\newcommand{\DEBUGCoordPuntos}[1]{%
+%  \directlua{mEsfera.DEBUGcoordpuntos(#1)}
+%}
+%
+%\newcommand{\DEBUGPlanos}[1]{%
+%  \directlua{mEsfera.DEBUGplanos(#1)}
+%}
+%
+%\newcommand{\DEBUGPlanosObs}[1]{%
+%  \directlua{mEsfera.DEBUGplanosobs(#1)}
+%}
+%
+%\newcommand{\DEBUGVectores}[1]{%
+%  \directlua{mEsfera.DEBUGvectores(#1)}
+%}
+%
+%\newcommand{\TIKZEsferaPlanos}[9]{%
+%  \directlua{mEsfera.TIKZEsferaPlanos(#1, #2, #3, #4, #5, #6, #7, #8, #9)}
+%}
+%
+%% Parámetros obligatorios: 
+%% #1=estilo visible, #2=r, #3=theta1, #4=phi1, #5=theta2, #6=phi2, #7=phi_meridiano, #8=theta_obs, #9=phi_obs
+%\newcommand{\tikzPureLuaArcVisible}[9]{%
+%    \directlua{generar_arco_visibilidad(#2, #3, #4, #5, #6, #7, #8, #9, '#1')}%
+%}
+%
+%%% ----------------------------------------------------------------------------
+%
+
+ 
+
+
+
+
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-engine: luatex
+%%% TeX-master: "elementos_esfera.tex"
+%%% End:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

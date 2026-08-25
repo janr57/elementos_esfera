@@ -1,0 +1,86 @@
+% elementos_esferas.pkg.sty
+
+% ---------------------------------------------------------------------------------
+\RequirePackage{fontspec}
+% ---------------------------------------------------------------------------------
+\RequirePackage{luacode}
+% ---------------------------------------------------------------------------------
+\RequirePackage[math-style=TeX]{unicode-math}
+\defaultfontfeatures{Ligatures=TeX}
+\RequirePackage{lualatex-math}
+% ---------------------------------------------------------------------------------
+% IDIOMAS
+\RequirePackage{polyglossia}
+\setmainlanguage{spanish}
+% ---------------------------------------------------------------------------------
+% FUENTES
+% Principal
+% Libertinus Serif, XITS, calibri
+% Elijo Libertinus para todos los tipos de letra, excepto para monoespaciada:
+\setmainfont{Libertinus Serif}
+\setmathfont{Libertinus Math}
+\setsansfont{Libertinus Sans}
+
+% Para Source Code Pro, consulta configuración en el fichero .defs:
+\setmonofont{SourceCode Pro}[%
+Scale=MatchLowercase,
+UprightFont=* Regular,
+ItalicFont=* Italic,
+% Mapeamos el "Bold" al grosor intermedio SemiBold para evitar exceso de grosor:
+BoldFont=* SemiBold,
+BoldItalicFont=* SemiBold Italic,
+% Mapeamos el "Medium" por si interesa un paso intermedio sin color:
+FontFace={m}{n}{* Medium}
+]
+% ---------------------------------------------------------------------------------
+% PÁRRAFOS
+\RequirePackage{parskip}
+% ---------------------------------------------------------------------------------
+% PROPIEDADES DE LISTAS
+\usepackage{enumitem}
+% ---------------------------------------------------------------------------------
+% UNIDADES
+\RequirePackage{siunitx}
+\sisetup{per-mode=power}
+\sisetup{exponent-product=\cdot}
+\sisetup{output-decimal-marker = {,}}
+\sisetup{retain-explicit-plus}
+\DeclareSIUnit\cv{CV}
+% ---------------------------------------------------------------------------------
+% COMENTARIOS EN LAS FIGURAS
+%\RequirePackage{subfigure}
+\RequirePackage{subfig}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\captionsetup{font=small}
+% ---------------------------------------------------------------------------------
+% LISTADOS Y CÓDIGO FUENTE
+\RequirePackage{fancyvrb}
+% ..................................................................................
+\RequirePackage{listings}
+\lstset{%
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible
+}
+% -----------------------------------------------------------------------------
+
+% ---------------------------------------------------------------------------------
+% GRÁFICOS
+\RequirePackage{graphicx}
+\RequirePackage[dvipsnames]{xcolor}
+\RequirePackage{tikz}
+\usetikzlibrary{shadings}
+% ---------------------------------------------------------------------------------
+
+
+
+
+
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-engine: luatex
+%%% TeX-master: "elementos_esfera.tex"
+%%% End:
