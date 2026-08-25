@@ -64,7 +64,8 @@ return {
    
    arcosmax2 = {
       {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, giro= "m"},
-      --(theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180, giro=1},
+--      {theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180,
+--      normal={thetaD=90, phiD=90}, punto="--",},
    },
 
 }
