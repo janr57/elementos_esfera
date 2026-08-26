@@ -1,4 +1,9 @@
 -- esf_prueba.lua
+--
+-- Copyright (C) 2022--2026 José A. Navarro Ramón <janr.devel@gmail.com>
+-- Licencia del código GPLv2
+-- Licencia Creative Commons Recognition Non-Commercial Share-alike.
+-- (CC-BY-NC-SA)
 
 return {
    -- 1. Datos y propiedades de la esfera:

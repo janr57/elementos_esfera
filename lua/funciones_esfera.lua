@@ -1,4 +1,9 @@
 -- funciones_esferas.lua
+--
+-- Copyright (C) 2022--2026 José A. Navarro Ramón <janr.devel@gmail.com>
+-- Licencia del código GPLv2
+-- Licencia Creative Commons Recognition Non-Commercial Share-alike.
+-- (CC-BY-NC-SA)
 
 local M = {}
 
@@ -683,11 +688,30 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       local pasos
       local last_u, last_v, last_vis
 
+      -- 1) Si los dos puntos extremos del arco, 1 y 2, son antipodales, hay
+      --    infinitos arcos máximos posibles. Tendríamos dos posibilidades:
+      --    a) Definir un tercer punto por el que deba pasar el arco, en cuyo
+      --       caso nos permite calcular la normal al círculo máximo que incluye
+      --       los tres puntos y definen el arco.
+      --       Solo nos queda definir el sentido de giro del arco con la variable
+      --       'giro' que vale +1 si el giro de 1 a 2 es antihorario, o -1 si es
+      --       horario.
+      --    b) Definir directamente la normal del plano que nos define el arco
+      --       máximo.
+      -- 2) Si los dos puntos extremos del arco no son antipodales, se puede definir
+      -- un vector normal al circulo máximo que define el arco.
+      -- En este caso, la variable 'giro' puede tener:
+      -- Un valor numérico, +1 o -1, que indica que el arco va del punto 1 al punto
+      -- 2 en un giro horario o antihorario.
+      -- Una cadena de texto, "m" o "M", que el arco es el de menor o mayor
+      -- distancia entre los puntos 1 y 2.
       if math.abs(th1D + th2D) == 180 and math.abs(ph2D - ph1D) == 180 then
+	 -- Los puntos 1 y 2 son antipodales:
 	 if punto == "--" then
 	 elseif normal == "--" then
 	 end
       else
+	 -- Los puntos 1 y 2 no son antipodales:
 	 -- Matriz de transformación del paralelo a arco de círculo máximo
 	 local u, v, w
       
