@@ -66,7 +66,7 @@ return {
    arcmaxprops2 = {
       loops = 240,
       color_vis = "red", lw_vis = "1.2pt",
-      color_novis = "white", lw_novis = "1pt",
+      color_novis = "white", lw_novis = "1.2pt",
    },
 
    arcosmax2 = {

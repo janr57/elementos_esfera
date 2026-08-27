@@ -631,6 +631,7 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       local x1, y1, z1, x2, y2, z2
       local ux, uy, uz, vx, vy, vz, wx, wy, wz, nx, ny, nz, nmod
       local delta_phi, n
+      local last_u, last_v, last_vis
       
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
@@ -673,18 +674,19 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 --      th2D = arcmax2.theta2D
 --      ph2D = arcmax2.phi2D
 
-      --
-      --
+      -- El vector unitario de 1 se define en todos los casos:
+      ux = x1 / R
+      uy = y1 / R
+      uz = z1 / R
+      u = {ux, uy, uz}
+
       -- Cálculo del ángulo que forman los puntos 1 y 2
+      -- para poder decidir si son puntos antipodales o no:
       local dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
       if dot > 1 then dot = 1
       elseif dot < -1 then dot = -1
       end
       local omega = math.acos(dot)
-      local ux, uy, uz
-
---      local dist, pasos
-      local last_u, last_v, last_vis
       
       if math.abs(omega - math.pi) < 1e-5 then
 	 -- Los puntos son antipodales:
@@ -692,18 +694,7 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 	 -- adicional del arco.
 	 
       else
-	 --	 -- Los puntos no son antipodales:
-	 --	 local vx = x2 - dot * x1
-	 --	 local vy = y2 - dot * y1
-	 --	 local vz = z2 - dot * z1
-	 --	 local norm = math.sqrt(vx*vx + vy*vy + vz*vz)
-	 --	 ux, uy, uz = vx / norm, vy / norm, vz / norm
-	 
-	 -- El vector unitario de 1 se define en todos los casos:
-	 ux = x1 / R
-	 uy = y1 / R
-	 uz = z1 / R
-	 u = {ux, uy, uz}
+	 -- Los puntos no son antipodales: forman un arco.
 	 
 	 -- Los puntos 1 y 2 no son antipodales:
 	 -- Matriz de transformación del paralelo a arco de círculo máximo
