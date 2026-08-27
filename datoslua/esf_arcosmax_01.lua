@@ -1,6 +1,12 @@
 -- esf_arcosmax_01.lua
+--
+-- Copyright (C) 2022--2026 José A. Navarro Ramón <janr.devel@gmail.com>
+-- Licencia del código GPLv2
+-- Licencia Creative Commons Recognition Non-Commercial Share-alike.
+-- (CC-BY-NC-SA)
 
 return {
+
    -- 1. Datos y propiedades de la esfera:
    esfera = {
       radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,
@@ -8,11 +14,12 @@ return {
 
    smbresfera = {ballcolor="white", opac=0.4},   
 
+   
    -- 2, Posición angular del observador
    observador = {thetaD = 65, phiD = 15},
 
 
-   -- 3. Meridianos
+  -- 3. Meridianos
    meridprops = {
       loops = 120, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
@@ -35,14 +42,12 @@ return {
       {phiD = -150}
    },
 
-   
-   -- 3. Paralelos
+   -- 4. Paralelos
    paralprops = {
       loops = 240, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
    },
-   
-   -- 4. Paralelos
+
    paralelos = {
       {thetaD = 30},
       {thetaD = 60},
@@ -52,28 +57,27 @@ return {
    },
 
    -- 5. Polos
-      polprops = {
+   polprops = {
       color_vis = "black!70", radio_vis="1pt",
       color_novis = "black!40", radio_novis="1pt",
    },
-
-   -- 6. Segmentos de arcos máximos
-   arcmaxprops = {
+   
+   -- Arcos máximos
+   arcmaxprops2 = {
       loops = 240,
-      color_vis = "red", lw_vis = "1pt",
-      color_novis = "orange!30", lw_novis = "0.8pt",
+      color_vis = "red", lw_vis = "1.2pt",
+      color_novis = "white", lw_novis = "1.2pt",
    },
 
---   arcmaxprops = {
---      loops = 240,
---      color_vis = "black!60", lw_vis = "1pt",
---      color_novis = "black!30", lw_novis = "0.8pt",
---   },
-
-   arcosmax = {
-      {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, phiD = 0,},
-      {theta1D = 60, phi1D = -20, theta2D = 120, phi2D = 160, phiD = 45,},
-      --(theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180, phiD = 0},
+   arcosmax2 = {
+--      {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, giro = "m",},
+--      {theta1D = 120, phi1D = 30, theta2D = 120, phi2D = 180,
+--       punto = {thetaD = 90, phiD = 30}, giro=1},
+--      {theta1D = 120, phi1D = 30, theta2D = 120, phi2D = 180,
+--       punto = {thetaD = 90, phiD = 30}, giro=-1,color_vis="blue",color_novis="yellow"},
+      {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, giro= 1},
+--      {theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180,
+--       punto = {thetaD = 0, phiD = 0}, giro = 1,}
    },
 
 }
