@@ -57,7 +57,7 @@ return {
       color_novis = "black!40", radio_novis="1pt",
    },
 
-   -- 6. Segmentos de paralelos
+   -- 6. Segmentos de arcos máximos
    arcmaxprops = {
       loops = 240,
       color_vis = "red", lw_vis = "1pt",
@@ -72,7 +72,7 @@ return {
 
    arcosmax = {
       {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, phiD = 0,},
-      {theta1D = 60, phi1D = -20, theta2D = 120, phi2D = 160, phiD = 0,},
+      {theta1D = 60, phi1D = -20, theta2D = 120, phi2D = 160, phiD = 45,},
       --(theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180, phiD = 0},
    },
 

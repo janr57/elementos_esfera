@@ -590,13 +590,6 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       -- tramo por tramo
       local last_u, last_v, last_vis
 
---      tex.sprint("\\node at (4,4) {Ok!};")
---      
---      tex.sprint(
---	 string.format(
---	    "\\node at (4,3) {pasos= %.2f};", pasos
---      ))
-      
       for i = 0, pasos do
 	 local t = i / pasos
 	 local current_angle = t * omega
@@ -607,13 +600,6 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	 
 	 local u,v,vis = M.calcular_punto_y_visibilidad(cx, cy, cz, obs)
 
-----	 if i == 0 then
-----	    tex.sprint(
-----	       string.format(
-----		  "\\node at (4,4) {(u,v,vis)=(%.2f, %.2f, %s)};", u, v, vis
-----	    ))
-----	 end
---
 	 if i > 0 then
 	    if vis and last_vis then
 	       table.insert(ptos_vis[index],
@@ -636,17 +622,19 @@ end
 function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
    local ptos_vis = {}
    local ptos_novis = {}
-
+   
    for index, arcmax2 in ipairs(arcosmax2) do
+      local loops, dist, giro
       local th1D, th2D, ph1D, ph2D
       local th1, ph1, th2, ph2, ph
       local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
       local x1, y1, z1, x2, y2, z2
       local ux, uy, uz, vx, vy, vz, wx, wy, wz, nx, ny, nz, nmod
+      local delta_phi, n
       
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
-      
+
       loops = arcmaxprops2.loops
       color_vis = arcmax2.color_vis or arcmaxprops2.color_vis
       lw_vis = arcmax2.lw_vis or arcmaxprops2.lw_vis
@@ -680,156 +668,147 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       y2 = R * sth2 * sph2
       z2 = R * cth2
 
-      th1D = arcmax2.theta1D
-      ph1D = arcmax2.phi1D
-      th2D = arcmax2.theta2D
-      ph2D = arcmax2.phi2D
+--      th1D = arcmax2.theta1D
+--      ph1D = arcmax2.phi1D
+--      th2D = arcmax2.theta2D
+--      ph2D = arcmax2.phi2D
 
-      local pasos
+      --
+      --
+      -- Cálculo del ángulo que forman los puntos 1 y 2
+      local dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
+      if dot > 1 then dot = 1
+      elseif dot < -1 then dot = -1
+      end
+      local omega = math.acos(dot)
+      local ux, uy, uz
+
+--      local dist, pasos
       local last_u, last_v, last_vis
-
-      -- 1) Si los dos puntos extremos del arco, 1 y 2, son antipodales, hay
-      --    infinitos arcos máximos posibles. Tendríamos dos posibilidades:
-      --    a) Definir un tercer punto por el que deba pasar el arco, en cuyo
-      --       caso nos permite calcular la normal al círculo máximo que incluye
-      --       los tres puntos y definen el arco.
-      --       Solo nos queda definir el sentido de giro del arco con la variable
-      --       'giro' que vale +1 si el giro de 1 a 2 es antihorario, o -1 si es
-      --       horario.
-      --    b) Definir directamente la normal del plano que nos define el arco
-      --       máximo.
-      -- 2) Si los dos puntos extremos del arco no son antipodales, se puede definir
-      -- un vector normal al circulo máximo que define el arco.
-      -- En este caso, la variable 'giro' puede tener:
-      -- Un valor numérico, +1 o -1, que indica que el arco va del punto 1 al punto
-      -- 2 en un giro horario o antihorario.
-      -- Una cadena de texto, "m" o "M", que el arco es el de menor o mayor
-      -- distancia entre los puntos 1 y 2.
-      if math.abs(th1D + th2D) == 180 and math.abs(ph2D - ph1D) == 180 then
-	 -- Los puntos 1 y 2 son antipodales:
-	 if punto == "--" then
-	 elseif normal == "--" then
-	 end
-      else
-	 -- Los puntos 1 y 2 no son antipodales:
-	 -- Matriz de transformación del paralelo a arco de círculo máximo
-	 local u, v, w
       
+      if math.abs(omega - math.pi) < 1e-5 then
+	 -- Los puntos son antipodales:
+	 -- En este caso hace falta algún dato más, como puede ser un punto
+	 -- adicional del arco.
+	 
+      else
+	 --	 -- Los puntos no son antipodales:
+	 --	 local vx = x2 - dot * x1
+	 --	 local vy = y2 - dot * y1
+	 --	 local vz = z2 - dot * z1
+	 --	 local norm = math.sqrt(vx*vx + vy*vy + vz*vz)
+	 --	 ux, uy, uz = vx / norm, vy / norm, vz / norm
+	 
+	 -- El vector unitario de 1 se define en todos los casos:
 	 ux = x1 / R
 	 uy = y1 / R
 	 uz = z1 / R
 	 u = {ux, uy, uz}
-
+	 
+	 -- Los puntos 1 y 2 no son antipodales:
+	 -- Matriz de transformación del paralelo a arco de círculo máximo
+	 local u, v, w
+	 
 	 nx = y1*z2-y2*z1
 	 ny = x2*z1-x1*z2
 	 nz = x1*y2-x2*y1
 	 nmod = math.sqrt(nx^2 + ny^2 + nz^2)
-
+	 
 	 wx = nx / nmod
 	 wy = ny / nmod
 	 wz = nz / nmod
 	 w = {wx, wy, wz}
-
+	 
 	 vx = wy*uz-uy*wz
 	 vy = ux*wz-wx*uz
 	 vz = wx*uy-ux*wy
 	 v = {vx, vy, vz}
-
+	 
 	 local xp, yp, zp
 
 	 -- Distancia entre los puntos 1 y 2
-	 local dist
 	 dist = R * math.acos(cth1 * cth2 + sth1 * sth2 * cph1ph2)
+
 	 
 	 giro = arcmax2.giro
 	 if type(giro) == "string" and giro == "M" then
 	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
 	    dist = 2 * math.pi * R - dist
 	 end
-
+	 
 	 -- Cálculo del punto final en el ecuador
 	 -- Punto inicial (theta = pi/2, phi = 0) o (x=R, y=0, z=0)
-	 local delta_phi = dist / R
-	 local phi
-	 local n
-
-	 if delta_phi>math.pi and type(giro)=="string" and giro=="M" then
+	 delta_phi = dist / R
+	 
+	 if delta_phi > math.pi and type(giro)=="string" and giro=="M" then
 	    n = 1
-	 elseif delta_phi>math.pi and type(giro)=="string" and giro=="m" then
+	 elseif delta_phi > math.pi and type(giro)=="string" and giro=="m" then
 	    n = -1
-	 elseif delta_phi< math.pi and type(giro)=="string" and giro=="M" then
+	 elseif delta_phi < math.pi and type(giro)=="string" and giro=="M" then
 	    n = -1
-	 elseif delta_phi<math.pi and type(giro)=="string" and giro=="m" then
+	 elseif delta_phi < math.pi and type(giro)=="string" and giro=="m" then
 	    n = 1
 	 elseif type(giro) == "number" and giro == 1 then
 	    n = 1
 	 elseif type(giro) == "number" and giro == -1 then
 	    n = -1
 	 end
-
-	 -- Adapta el número de puntos según la longitud de cada segmento
-	 pasos = math.ceil(loops * dist /(2 * math.pi * R))
-
+      end
       
-	 -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
-	 -- tramo por tramo
-	 local last_u, last_v, last_vis
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3.5,4.5) {loops= %.2f, dist= %.2f, giro= %s};",
+--	    loops, dist, giro
+--      ))
+            
+      -- Adapta el número de puntos según la longitud de cada segmento
+      pasos = math.ceil(loops * dist /(2 * math.pi * R))
+
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3.5,4) {pasos=%.2f};", pasos
+--      ))
+      
+      -- Coordenadas de puntos en el ecuador: (theta=90, phi=0-360)
+      -- theta no varía
+      local theta = math.pi/2
+      local sth = math.sin(theta)
+      local cth = math.cos(theta)
+      local phi      
+
+      -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
+      -- tramo por tramo      
+      for i = 0, pasos do
 	 
-	 local theta = math.pi/2
-	 local sth = math.sin(theta)
-	 local cth = math.cos(theta)
-
-	 for i = 0, pasos do
-	    
-	    phi = i * n * delta_phi /pasos
-	    
-	    --	 local t = i / pasos
-	    --	 local current_angle = t * omega
+	 phi = i * n * delta_phi /pasos
+	 
+	 local cx = R * sth * math.cos(phi)
+	 local cy = R * sth * math.sin(phi)
+	 local cz = R * cth
+	 
+	 -- Aplicamos la matriz de transformación
+	 xp = cx*ux+cy*vx+cz*wx
+	 yp = cx*uy+cy*vy+cz*wy
+	 zp = cx*uz+cy*vz+cz*wz
+	 
+	 local u, v, vis = M.calcular_punto_y_visibilidad(xp, yp, zp, obs)
 	       
-	    local cx = R * sth * math.cos(phi)
-	    local cy = R * sth * math.sin(phi)
-	    local cz = R * cth
-	       
-	    -- Aplicamos la matriz de transformación
-	    xp = cx*ux+cy*vx+cz*wx
-	    yp = cx*uy+cy*vy+cz*wy
-	    zp = cx*uz+cy*vz+cz*wz
-	       
-	    --	 local cx = math.cos(current_angle)*x1 + math.sin(current_angle)*(ux*R)
-	    --	 local cy = math.cos(current_angle)*y1 + math.sin(current_angle)*(uy*R)
-	    --	 local cz = math.cos(current_angle)*z1 + math.sin(current_angle)*(uz*R)
-	    
-	    local u, v, vis = M.calcular_punto_y_visibilidad(xp, yp, zp, obs)
-	       
---	       if i == pasos then
---		  tex.sprint(
---		     string.format(
---			"\\node at (3,3) {i= %.2f; (th,ph)= (%.2f, %.2f); (xp,yp,zp)=(%.2f, %.2f, %.2f)};", i, math.deg(theta), math.deg(phi), xp, yp, zp
---		  ))
---		  tex.sprint(
---		     string.format(
---			"\\node at (3,2.5) {(u,v,vis)= (%.2f, %.2f, %s)};", u, v, vis
---		  ))
---	       end
-	       
-	    if i > 0 then
-	       if vis and last_vis then
-		  table.insert(ptos_vis[index],
-			       {color_vis,lw_vis,last_u,last_v,u,v})
-	       elseif transp then
-		  table.insert(ptos_novis[index],
-			       {color_novis, lw_novis, last_u, last_v, u, v})
-	       end -- if vis and last_vis
-	    end -- if i > 0
-	    
-	    last_u, last_v, last_vis = u, v, vis
-	    
-	 end -- for 0, pasos	 
-
-      end -- if deciding
+	 if i > 0 then
+	    if vis and last_vis then
+	       table.insert(ptos_vis[index],
+			    {color_vis,lw_vis,last_u,last_v,u,v})
+	    elseif transp then
+	       table.insert(ptos_novis[index],
+			    {color_novis, lw_novis, last_u, last_v, u, v})
+	    end -- if vis and last_vis
+	 end -- if i > 0
+	 
+	 last_u, last_v, last_vis = u, v, vis
+	 
+      end -- for 0, pasos	 
       
    end -- for index, arcmax2
-   
+
    return ptos_vis, ptos_novis
 end
 

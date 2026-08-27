@@ -6,6 +6,7 @@
 -- (CC-BY-NC-SA)
 
 return {
+
    -- 1. Datos y propiedades de la esfera:
    esfera = {
       radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,
@@ -13,6 +14,7 @@ return {
 
    smbresfera = {ballcolor="white", opac=0.4},   
 
+   
    -- 2, Posición angular del observador
    observador = {thetaD = 65, phiD = 15},
 
@@ -59,19 +61,40 @@ return {
       color_vis = "black!70", radio_vis="1pt",
       color_novis = "black!40", radio_novis="1pt",
    },
-
-   -- 6. Arcos máximos de prueba 
+   
+   -- Arcos máximos
    arcmaxprops2 = {
       loops = 240,
-      color_vis = "red", lw_vis = "1pt",
-      color_novis = "orange!60", lw_novis = "0.8pt",
+      color_vis = "red", lw_vis = "1.2pt",
+      color_novis = "white", lw_novis = "1pt",
    },
-   
+
    arcosmax2 = {
+      {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, giro = "m",},
+--      {theta1D = 60, phi1D = -20, theta2D = 120, phi2D = 160,
+--      punto = {thetaD = 90, phiD = 30},},
       {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, giro= "m"},
---      {theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180,
---      normal={thetaD=90, phiD=90}, punto="--",},
+--      (theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180, phiD = 0},
    },
+
+   
+--   -- 6. Arcos máximos de prueba 
+--   arcmaxprops2 = {
+--      loops = 240,
+--      color_vis = "red", lw_vis = "1pt",
+--      color_novis = "orange!60", lw_novis = "0.8pt",
+--   },
+--   
+--   arcosmax2 = {
+--      {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, giro= "m"},
+--   },
+--
+--   semicircmax = {
+--      {theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180,
+--       normal={thetaD=90, phiD=90}, punto={thetaD = 90, phi1D=0}, normal="--"},
+----      {theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180,
+----      normal={thetaD=90, phiD=90}, punto={thetaD = 90, phi1D=0}, normal="--"},
+--   },
 
 }
 
