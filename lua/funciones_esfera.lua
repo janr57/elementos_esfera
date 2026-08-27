@@ -646,7 +646,7 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       ph1 = math.rad(arcmax2.phi1D)
       th2 = math.rad(arcmax2.theta2D)
       ph2 = math.rad(arcmax2.phi2D)
-      --giro = arcmax2.giro
+      giro = arcmax2.giro
       
       sth1 = math.sin(th1)
       cth1 = math.cos(th1)
@@ -680,6 +680,10 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       uz = z1 / R
       u = {ux, uy, uz}
 
+      -- La distancia entre los puntos 1 y 2 se puede calcular ahora,
+      -- pues en todos los casos se calcula igual:
+      dist = R * math.acos(cth1 * cth2 + sth1 * sth2 * cph1ph2)
+
       -- Cálculo del ángulo que forman los puntos 1 y 2
       -- para poder decidir si son puntos antipodales o no:
       local dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
@@ -692,59 +696,76 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 	 -- Los puntos son antipodales:
 	 -- En este caso hace falta algún dato más, como puede ser un punto
 	 -- adicional del arco.
+	 -- Utilizo la variable 'punto' (que define el punto 3) en lugar del
+	 -- punto 2 para determinar la normal y su perpendicular y la distancia
+	 -- entre 1 y 2 (no 3, que se utiliza para poder definir el círculo máximo).
+	 -- Esféricas del punto
+	 local th3 = math.rad(arcmax2.punto.thetaD)
+	 local ph3 = math.rad(arcmax2.punto.phiD)
+
+	 -- Cartesianas del punto
+	 local x3 = math.sin(th3) * math.cos(ph3)
+	 local y3 = math.sin(th3) * math.sin(ph3)
+	 local z3 = math.cos(ph3)
+
+--	 tex.sprint(
+--	    string.format(
+--	       "\\node at (3.5,4) {(th3,ph3)= (%.2f, %.2f)};", th3, ph3
+--	 ))
 	 
+	 nx =y1*z3-y3*z1
+	 ny = x3*z1-x1*z3
+	 nz = x1*y3-x3*y1
+
       else
 	 -- Los puntos no son antipodales: forman un arco.
 	 
-	 -- Los puntos 1 y 2 no son antipodales:
+	 -- Si queremos el arco mayor, hay que cambiar la distancia entre 1 y 2
+	 -- en este caso (esto no ocutre cuando son antipodales)
+	 if type(giro) == "string" and giro == "M" then
+	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
+	    dist = 2 * math.pi * R - dist
+	 end
+	 
 	 -- Matriz de transformación del paralelo a arco de círculo máximo
 	 local u, v, w
 	 
 	 nx = y1*z2-y2*z1
 	 ny = x2*z1-x1*z2
 	 nz = x1*y2-x2*y1
-	 nmod = math.sqrt(nx^2 + ny^2 + nz^2)
 	 
-	 wx = nx / nmod
-	 wy = ny / nmod
-	 wz = nz / nmod
-	 w = {wx, wy, wz}
-	 
-	 vx = wy*uz-uy*wz
-	 vy = ux*wz-wx*uz
-	 vz = wx*uy-ux*wy
-	 v = {vx, vy, vz}
-	 
-	 local xp, yp, zp
-
-	 -- Distancia entre los puntos 1 y 2
-	 dist = R * math.acos(cth1 * cth2 + sth1 * sth2 * cph1ph2)
-
-	 
-	 giro = arcmax2.giro
-	 if type(giro) == "string" and giro == "M" then
-	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
-	    dist = 2 * math.pi * R - dist
-	 end
-	 
-	 -- Cálculo del punto final en el ecuador
-	 -- Punto inicial (theta = pi/2, phi = 0) o (x=R, y=0, z=0)
-	 delta_phi = dist / R
-	 
-	 if delta_phi > math.pi and type(giro)=="string" and giro=="M" then
-	    n = 1
-	 elseif delta_phi > math.pi and type(giro)=="string" and giro=="m" then
-	    n = -1
-	 elseif delta_phi < math.pi and type(giro)=="string" and giro=="M" then
-	    n = -1
-	 elseif delta_phi < math.pi and type(giro)=="string" and giro=="m" then
-	    n = 1
-	 elseif type(giro) == "number" and giro == 1 then
-	    n = 1
-	 elseif type(giro) == "number" and giro == -1 then
-	    n = -1
-	 end
       end
+
+      nmod = math.sqrt(nx^2 + ny^2 + nz^2)
+      
+      wx = nx / nmod
+      wy = ny / nmod
+      wz = nz / nmod
+      w = {wx, wy, wz}
+      
+      vx = wy*uz-uy*wz
+      vy = ux*wz-wx*uz
+      vz = wx*uy-ux*wy
+      v = {vx, vy, vz}
+      
+      -- Cálculo del punto final en el ecuador
+      -- Punto inicial (theta = pi/2, phi = 0) o (x=R, y=0, z=0)
+      delta_phi = dist / R
+      
+      if delta_phi > math.pi and type(giro)=="string" and giro=="M" then
+	 n = 1
+      elseif delta_phi > math.pi and type(giro)=="string" and giro=="m" then
+	 n = -1
+      elseif delta_phi < math.pi and type(giro)=="string" and giro=="M" then
+	 n = -1
+      elseif delta_phi < math.pi and type(giro)=="string" and giro=="m" then
+	 n = 1
+      elseif type(giro) == "number" and giro == 1 then
+	 n = 1
+      elseif type(giro) == "number" and giro == -1 then
+	 n = -1
+      end
+      
       
 --      tex.sprint(
 --	 string.format(
