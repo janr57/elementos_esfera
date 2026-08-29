@@ -23,8 +23,8 @@ function M.dibuja_tikzesfera(transp, esc)
    local sgmparals = esc.sgmparals
    local arcmaxprops = esc.arcmaxprops
    local arcosmax = esc.arcosmax
-   local arcmaxprops2 = esc.arcmaxprops2
-   local arcosmax2 = esc.arcosmax2
+--   local arcmaxprops2 = esc.arcmaxprops2
+--   local arcosmax2 = esc.arcosmax2
 --   local ptos = esc.puntos
 --   local planos = esc.planos
 
@@ -113,11 +113,11 @@ function M.dibuja_tikzesfera(transp, esc)
 --   end
 
    -- Arcos máximos 2
-   if arcmaxprops2 and arcosmax2 then
+   if arcmaxprops and arcosmax then
       
       local R = esf.radio
       
-      arcmax2_vis, arcmax2_novis = M.arcsmaximos2(transp,R,obs,arcmaxprops2,arcosmax2)
+      arcmax2_vis, arcmax2_novis = M.arcsmaximos2(transp,R,obs,arcmaxprops,arcosmax)
       if transp then
 	 M.dibuja_curvas(arcmax2_novis)
 	 arcmax2_novis = nil
@@ -153,7 +153,7 @@ function M.dibuja_tikzesfera(transp, esc)
       arcmax_vis = nil
    end
 
-   if arcmaxprops2 and arcosmax2 then
+   if arcmaxprops and arcosmax then
       M.dibuja_curvas(arcmax2_vis)
 
       arcmax2_vis = nil
@@ -619,11 +619,14 @@ end
 --end
 
 -- ----------------------------------------------------------------------------
-function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
+-- Info:
+-- Punto antipodal de (theta1, phi1) es (theta2=180-theta1, phi2=(phi1+180)/(2pi)
+--
+function M.arcsmaximos2(transp, R, obs, arcmaxprops, arcosmax)
    local ptos_vis = {}
    local ptos_novis = {}
    
-   for index, arcmax2 in ipairs(arcosmax2) do
+   for index, arcmax in ipairs(arcosmax) do
       local loops, dist, distmin, distmax, giro
       local th1D, th2D, ph1D, ph2D
       local th1, ph1, th2, ph2, th3, ph3
@@ -639,17 +642,17 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
 
-      loops = arcmaxprops2.loops
-      color_vis = arcmax2.color_vis or arcmaxprops2.color_vis
-      lw_vis = arcmax2.lw_vis or arcmaxprops2.lw_vis
-      color_novis = arcmax2.color_novis or arcmaxprops2.color_novis
-      lw_novis = arcmax2.lw_novis or arcmaxprops2.lw_novis
+      loops = arcmaxprops.loops
+      color_vis = arcmax.color_vis or arcmaxprops.color_vis
+      lw_vis = arcmax.lw_vis or arcmaxprops.lw_vis
+      color_novis = arcmax.color_novis or arcmaxprops.color_novis
+      lw_novis = arcmax.lw_novis or arcmaxprops.lw_novis
 
-      th1 = math.rad(arcmax2.theta1D)
-      ph1 = math.rad(arcmax2.phi1D)
-      th2 = math.rad(arcmax2.theta2D)
-      ph2 = math.rad(arcmax2.phi2D)
-      giro = arcmax2.giro
+      th1 = math.rad(arcmax.theta1D)
+      ph1 = math.rad(arcmax.phi1D)
+      th2 = math.rad(arcmax.theta2D)
+      ph2 = math.rad(arcmax.phi2D)
+      giro = arcmax.giro
       
       sth1 = math.sin(th1)
       cth1 = math.cos(th1)
@@ -705,8 +708,8 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 	 -- se dibuja es entre 1 y 2 (no 3, que se utiliza para poder definir el
 	 -- círculo máximo). Si se añade giro = -1, se dibuja el arco opuesto.
 	 -- Esféricas del punto
-	 th3 = math.rad(arcmax2.punto.thetaD)
-	 ph3 = math.rad(arcmax2.punto.phiD)
+	 th3 = math.rad(arcmax.punto.thetaD)
+	 ph3 = math.rad(arcmax.punto.phiD)
 
 	 -- Cartesianas del punto
 	 x3 = math.sin(th3) * math.cos(ph3)
@@ -755,49 +758,6 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       wy = w.wy
       wz = w.wz
       
---      if type(giro) == "string" then
---	 tex.sprint(
---	    string.format(
---	       "\\node at (3,3) {deltaphi= %.2f, omega= %.2f, giro= %s};",
---	       delta_phi, omega, giro
---	 ))
---      else
---	 tex.sprint(
---	    string.format(
---	       "\\node at (3,3) {deltaphi= %.2f, omega= %.2f, giro= %.2f};",
---	       delta_phi, omega, giro
---	 ))
---      end
-      
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,2.5) {omegamin= %.2f, omegamax= %.2f};",
-	    omegamin, omegamax
-      ))
-      
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,2) {deltaphi= %.2f, omega= %.2f};", delta_phi, omega
-      ))
-
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,1.5) {wz= %.2f};", wz
-      ))
-
-      if type(giro) == "string" then
-	 tex.sprint(
-	    string.format(
-	       "\\node at (3,1) {giro= %s};", giro
-	 ))
-      else
-	 tex.sprint(
-	    string.format(
-	       "\\node at (3,0.5) {giro= %.2f};", giro
-	 ))
-      end
-      
-      
       if delta_phi > math.pi and giro == "M" then
 	 signo_bucle = -1
       elseif delta_phi > math.pi and giro == "m" then
@@ -808,26 +768,8 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 	 signo_bucle = 1
       end
       
---      tex.sprint(
---	 string.format(
---	    "\\node at (3.5,4.5) {loops= %.2f, dist= %.2f, giro= %s};",
---	    loops, dist, giro
---      ))
-            
       -- Adapta el número de puntos según la longitud de cada segmento
       pasos = math.ceil(loops * dist /(2 * math.pi * R))
-
-      tex.sprint(
-	 string.format(
-	    "\\node at (3.3,0) {signobucle= %.2f};", signo_bucle
-      ))
-      
-      -- Coordenadas de puntos en el ecuador: (theta=90, phi=0-360)
-      -- theta no varía
---      local theta = math.pi/2
---      local sth = math.sin(theta)
---      local cth = math.cos(theta)
---      local phi
 
       theta = math.pi/2
       sth = math.sin(theta)
@@ -839,10 +781,6 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 
 	 phi = (i * signo_bucle * omega /pasos) % (2 * math.pi)
 	 
---	 local cx = R * sth * math.cos(phi)
---	 local cy = R * sth * math.sin(phi)
---	 local cz = R * cth
-
 	 cx = R * sth * math.cos(phi)
 	 cy = R * sth * math.sin(phi)
 	 cz = R * cth
@@ -868,7 +806,7 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 	 
       end -- for 0, pasos	 
       
-   end -- for index, arcmax2
+   end -- for index, arcmax
 
    return ptos_vis, ptos_novis
 end

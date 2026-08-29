@@ -63,13 +63,13 @@ return {
    },
    
    -- Arcos máximos
-   arcmaxprops2 = {
+   arcmaxprops = {
       loops = 240,
       color_vis = "red", lw_vis = "1.2pt",
       color_novis = "yellow!50", lw_novis = "0.8pt",
    },
 
-   arcosmax2 = {
+   arcosmax = {
 --      {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, giro = "m",},
 --      {theta1D = 120, phi1D = 30, theta2D = 120, phi2D = 180,
 --       punto = {thetaD = 90, phiD = 30}, giro=1},

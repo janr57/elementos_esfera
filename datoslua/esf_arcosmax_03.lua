@@ -1,4 +1,4 @@
--- esf_arcosmax_01.lua
+-- esf_arcosmax_03.lua
 --
 -- Copyright (C) 2022--2026 José A. Navarro Ramón <janr.devel@gmail.com>
 -- Licencia del código GPLv2
@@ -63,13 +63,13 @@ return {
    },
    
    -- Arcos máximos
-   arcmaxprops2 = {
+   arcmaxprops = {
       loops = 240,
       color_vis = "red", lw_vis = "1.2pt",
       color_novis = "white", lw_novis = "1.2pt",
    },
 
-   arcosmax2 = {
+   arcosmax = {
 --      {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, giro = "m",},
 --      {theta1D = 120, phi1D = 30, theta2D = 120, phi2D = 180,
 --       punto = {thetaD = 90, phiD = 30}, giro=1},
