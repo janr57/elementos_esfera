@@ -634,6 +634,7 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       local xp, yp, zp
       local delta_phi, omega, omegamin, omegamax, signo_bucle
       local last_u, last_v, last_vis
+      local dot, phi, cx, cy, cz
       
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
@@ -671,28 +672,12 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       y2 = R * sth2 * sph2
       z2 = R * cth2
 
---      th1D = arcmax2.theta1D
---      ph1D = arcmax2.phi1D
---      th2D = arcmax2.theta2D
---      ph2D = arcmax2.phi2D
-
-      -- El vector unitario de 1 se define en todos los casos:
---      ux = x1 / R
---      uy = y1 / R
---      uz = z1 / R
---      u = {ux, uy, uz}
-
       -- La distancia entre los puntos 1 y 2 se puede calcular ahora,
       -- pues en todos los casos se calcula igual:
       distmin = R * math.acos(cth1 * cth2 + sth1 * sth2 * cph1ph2)
       distmax = 2 * math.pi * R - distmin
       dist = distmin
 
---      nx = 0
---      ny = 0
---      nz = 0
---      nmod = 0
-      
       -- Cálculo del ángulo que forman los puntos 1 y 2
       -- para poder decidir si son puntos antipodales o no:
       -- Cálculo del punto final en el ecuador
@@ -700,21 +685,25 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       -- delta_phi es igual a omega
       delta_phi = dist / R
       
-      local dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
+      dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
       if dot > 1 then dot = 1
       elseif dot < -1 then dot = -1
       end -- dot
       omegamin = math.acos(dot)
       omegamax = math.abs(2*math.pi-omegamin)
       omega = omegamin
+
+      -- Proporciona un valor imposible
+      signo_bucle = 0
       
       if math.abs(omega - math.pi) < 1e-5 then
 	 -- Los puntos son antipodales:
 	 -- En este caso hace falta algún dato más, como puede ser un punto
 	 -- adicional del arco.
 	 -- Utilizo la variable 'punto' (que define el punto 3) en lugar del
-	 -- punto 2 para determinar la normal y su perpendicular y la distancia
-	 -- entre 1 y 2 (no 3, que se utiliza para poder definir el círculo máximo).
+	 -- punto 2 para determinar la normal y su perpendicular y la distancia que
+	 -- se dibuja es entre 1 y 2 (no 3, que se utiliza para poder definir el
+	 -- círculo máximo). Si se añade giro = -1, se dibuja el arco opuesto.
 	 -- Esféricas del punto
 	 th3 = math.rad(arcmax2.punto.thetaD)
 	 ph3 = math.rad(arcmax2.punto.phiD)
@@ -723,73 +712,49 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
 	 x3 = math.sin(th3) * math.cos(ph3)
 	 y3 = math.sin(th3) * math.sin(ph3)
 	 z3 = math.cos(ph3)
-
---	 tex.sprint(
---	    string.format(
---	       "\\node at (3.5,4) {(th3,ph3)= (%.2f, %.2f)};", th3, ph3
---	 ))
 	 
---	 nx =y1*z3-y3*z1
---	 ny = x3*z1-x1*z3
---	 nz = x1*y3-x3*y1
+	 if giro == 1 then
+	    u, v, w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
+	    signo_bucle = 1
+	 elseif giro == -1 then
+	    u, v, w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
+	    signo_bucle = -1
+	 end
 
-	 u, v, w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
+	 tex.sprint(
+	    string.format(
+	       "\\node at (3.2,-0.5) {signobucle= %.2f};", signo_bucle
+	 ))
 	 
       else
 	 -- Los puntos no son antipodales: forman un arco.
 	 
 	 -- Si queremos el arco mayor, hay que cambiar la distancia entre 1 y 2
 	 -- en este caso (esto no ocutre cuando son antipodales)
-	 if type(giro) == "string" and giro == "M" then
+	 if giro == "M" then
 	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
 	    dist = distmax
 	    omega = omegamax
-	    
---	    nx = -(y1*z2-y2*z1)
---	    ny = -(x2*z1-x1*z2)
---	    nz = -(x1*y2-x2*y1)
---	    nmod = math.sqrt(nx^2 + ny^2 + nz^2)
 	    u, v, w = M.matriz_transformacion(x2, y2, z2, x1, y1, z1, R)
-	    
-	 elseif type(giro) == "string" and giro == "m" then
+	 elseif giro == "m" then
 	    dist = distmin
 	    omega = omegamin
-
 	    u, v, w = M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
---	    nx = y1*z2-y2*z1
---	    ny = x2*z1-x1*z2
---	    nz = x1*y2-x2*y1
---	    nmod = math.sqrt(nx^2 + ny^2 + nz^2)
-	    
 	 end -- type(giro) == "string" and giro
-	 
-	 -- Matriz de transformación del ecuador a arco de círculo máximo
-	 
---	 wx = nx / nmod
---	 wy = ny / nmod
---	 wz = nz / nmod
---	 w = {wx, wy, wz}
-	 
---	 vx = wy*uz-uy*wz
---	 vy = ux*wz-wx*uz
---	 vz = wx*uy-ux*wy
---	 v = {vx, vy, vz}
-	 
       end -- omega
-
+      
       ux = u.ux
       uy = u.uy
       uz = u.uz
-
+      
       vx = v.vx
       vy = v.vy
       vz = v.vz
-
+      
       wx = w.wx
       wy = w.wy
       wz = w.wz
-            
-
+      
 --      if type(giro) == "string" then
 --	 tex.sprint(
 --	    string.format(
@@ -806,46 +771,40 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       
       tex.sprint(
 	 string.format(
-	    "\\node at (3,3) {omegamin= %.2f, omegamax= %.2f};",
+	    "\\node at (3,2.5) {omegamin= %.2f, omegamax= %.2f};",
 	    omegamin, omegamax
       ))
       
       tex.sprint(
 	 string.format(
-	    "\\node at (3,2.5) {deltaphi= %.2f, omega= %.2f};", delta_phi, omega
+	    "\\node at (3,2) {deltaphi= %.2f, omega= %.2f};", delta_phi, omega
       ))
 
       tex.sprint(
 	 string.format(
-	    "\\node at (3,2) {wz= %.2f};", wz
+	    "\\node at (3,1.5) {wz= %.2f};", wz
       ))
 
       if type(giro) == "string" then
 	 tex.sprint(
 	    string.format(
-	       "\\node at (3,1.5) {giro= %s};", giro
+	       "\\node at (3,1) {giro= %s};", giro
 	 ))
       else
 	 tex.sprint(
 	    string.format(
-	       "\\node at (3,1.5) {giro= %.2f};", giro
+	       "\\node at (3,0.5) {giro= %.2f};", giro
 	 ))
       end
       
-            
-      if delta_phi > math.pi and type(giro)=="string" and giro=="M" then
+      
+      if delta_phi > math.pi and giro == "M" then
 	 signo_bucle = -1
-      elseif delta_phi > math.pi and type(giro)=="string" and giro=="m" then
+      elseif delta_phi > math.pi and giro == "m" then
 	 signo_bucle= 1
-      elseif delta_phi < math.pi and type(giro)=="string" and giro=="M" then
+      elseif delta_phi < math.pi and giro == "M" then
 	 signo_bucle = -1
-      elseif delta_phi < math.pi and type(giro)=="string" and giro=="m" then
-	 signo_bucle = 1
-      elseif type(giro) == "number" and giro == 1 then
-	 signo_bucle = 1
-      elseif type(giro) == "number" and giro == -1 then
-	 signo_bucle = -1
-      else
+      elseif delta_phi < math.pi and giro == "m" then
 	 signo_bucle = 1
       end
       
@@ -858,28 +817,36 @@ function M.arcsmaximos2(transp, R, obs, arcmaxprops2, arcosmax2)
       -- Adapta el número de puntos según la longitud de cada segmento
       pasos = math.ceil(loops * dist /(2 * math.pi * R))
 
---      tex.sprint(
---	 string.format(
---	    "\\node at (3.5,4) {n= %.2f};", n
---      ))
+      tex.sprint(
+	 string.format(
+	    "\\node at (3.3,0) {signobucle= %.2f};", signo_bucle
+      ))
       
       -- Coordenadas de puntos en el ecuador: (theta=90, phi=0-360)
       -- theta no varía
-      local theta = math.pi/2
-      local sth = math.sin(theta)
-      local cth = math.cos(theta)
-      local phi
+--      local theta = math.pi/2
+--      local sth = math.sin(theta)
+--      local cth = math.cos(theta)
+--      local phi
+
+      theta = math.pi/2
+      sth = math.sin(theta)
+      cth = math.cos(theta)
 
       -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
       -- tramo por tramo
       for i = 0, pasos do
+
+	 phi = (i * signo_bucle * omega /pasos) % (2 * math.pi)
 	 
-	 phi = i * signo_bucle * omega /pasos
-	 
-	 local cx = R * sth * math.cos(phi)
-	 local cy = R * sth * math.sin(phi)
-	 local cz = R * cth
-	 
+--	 local cx = R * sth * math.cos(phi)
+--	 local cy = R * sth * math.sin(phi)
+--	 local cz = R * cth
+
+	 cx = R * sth * math.cos(phi)
+	 cy = R * sth * math.sin(phi)
+	 cz = R * cth
+
 	 -- Aplicamos la matriz de transformación
 	 xp = cx*ux+cy*vx+cz*wx
 	 yp = cx*uy+cy*vy+cz*wy
