@@ -112,15 +112,15 @@ function M.dibuja_tikzesfera(transp, esc)
 --      arcmax_novis = nil
 --   end
 
-   -- Arcos máximos 2
+   -- Arcos máximos
    if arcmaxprops and arcosmax then
       
       local R = esf.radio
       
-      arcmax2_vis, arcmax2_novis = M.arcsmaximos2(transp,R,obs,arcmaxprops,arcosmax)
+      arcmax_vis, arcmax_novis = M.arcsmaximos(transp,R,obs,arcmaxprops,arcosmax)
       if transp then
-	 M.dibuja_curvas(arcmax2_novis)
-	 arcmax2_novis = nil
+	 M.dibuja_curvas(arcmax_novis)
+	 arcmax_novis = nil
       end
 
    end
@@ -147,16 +147,16 @@ function M.dibuja_tikzesfera(transp, esc)
 
       sgmpar_vis = nil
    end
+--   if arcmaxprops and arcosmax then
+--      M.dibuja_curvas(arcmax_vis)
+--
+--      arcmax_vis = nil
+--   end
+
    if arcmaxprops and arcosmax then
       M.dibuja_curvas(arcmax_vis)
 
       arcmax_vis = nil
-   end
-
-   if arcmaxprops and arcosmax then
-      M.dibuja_curvas(arcmax2_vis)
-
-      arcmax2_vis = nil
    end
 
    
@@ -622,7 +622,7 @@ end
 -- Info:
 -- Punto antipodal de (theta1, phi1) es (theta2=180-theta1, phi2=(phi1+180)/(2pi)
 --
-function M.arcsmaximos2(transp, R, obs, arcmaxprops, arcosmax)
+function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
    local ptos_vis = {}
    local ptos_novis = {}
    

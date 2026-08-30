@@ -16,7 +16,6 @@ FILES =	elementos_esfera.pkg.sty\
 	texto/paralelos.tex\
 	texto/sgmparalelos.tex\
 	texto/arcosmax.tex\
-	texto/prueba.tex\
 	texto/extra.tex\
 	lua/funciones_esfera.lua\
 	datoslua/esf_bas_01.lua\
