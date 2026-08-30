@@ -713,7 +713,7 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	 -- Cartesianas del punto
 	 x3 = math.sin(th3) * math.cos(ph3)
 	 y3 = math.sin(th3) * math.sin(ph3)
-	 z3 = math.cos(ph3)
+	 z3 = math.cos(th3)
 	 
 	 if giro == 1 then
 	    u, v, w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
