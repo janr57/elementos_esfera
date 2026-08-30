@@ -14,7 +14,7 @@ FILES =	elementos_esfera.pkg.sty\
 	texto/esferas.tex\
 	texto/meridianos.tex\
 	texto/paralelos.tex\
-	texto/sgmparalelos.tex\
+	texto/arcosparalelos.tex\
 	texto/arcosmax.tex\
 	texto/extra.tex\
 	lua/funciones_esfera.lua\
@@ -27,10 +27,9 @@ FILES =	elementos_esfera.pkg.sty\
 	datoslua/esf_meridres_02.lua\
 	datoslua/esf_paral_01.lua\
 	datoslua/esf_paral_02.lua\
-	datoslua/esf_sgmpar_01.lua\
-	datoslua/esf_sgmpar_02.lua\
+	datoslua/esf_arcosparal_01.lua\
+	datoslua/esf_arcosparal_02.lua\
 	datoslua/esf_arcosmax_01.lua\
-	datoslua/esf_prueba.lua\
 	datoslua/esf_merpar_01.lua\
 	$(IMGSTATICDIR)/Cc-by-nc-sa_icon.pdf
 
@@ -51,6 +50,7 @@ clean:
 	rm -rf *.pdf *.ps *.dvi *.aux *.log *.toc *.out dat*~ *.dat *.script
 	rm -rf auto
 	rm -rf portada/*.aux portada/*~
+	rm -rf tablacontenidos/*.aux tablacontenidos/*~
 	rm -rf texto/*.aux texto/*~
 
 

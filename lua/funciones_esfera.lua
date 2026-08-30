@@ -19,12 +19,10 @@ function M.dibuja_tikzesfera(transp, esc)
    local paralprops = esc.paralprops
    local paralelos = esc.paralelos
    local polprops = esc.polprops
-   local sgmparprops= esc.sgmparprops
-   local sgmparals = esc.sgmparals
+   local arcparprops= esc.arcparprops
+   local arcparals = esc.arcparals
    local arcmaxprops = esc.arcmaxprops
    local arcosmax = esc.arcosmax
---   local arcmaxprops2 = esc.arcmaxprops2
---   local arcosmax2 = esc.arcosmax2
 --   local ptos = esc.puntos
 --   local planos = esc.planos
 
@@ -90,15 +88,15 @@ function M.dibuja_tikzesfera(transp, esc)
       polos_novis = nil
    end
 
-   -- Segmentos de paralelos
-   if sgmparprops and sgmparals then
+   -- Arcos de paralelos
+   if arcparprops and arcparals then
       local R = esf.radio
 
-      sgmpar_vis, sgmpar_novis = M.sgmparals(transp, R, obs, sgmparprops, sgmparals)
+      arcpar_vis, arcpar_novis = M.arcparals(transp,R,obs,arcparprops, arcparals)
       if transp then
-	 M.dibuja_curvas(sgmpar_novis)
+	 M.dibuja_curvas(arcpar_novis)
       end
-      sgmpar_novis = nil  
+      arcpar_novis = nil  
    end
    
 --   -- Arcos máximos
@@ -142,10 +140,10 @@ function M.dibuja_tikzesfera(transp, esc)
 
       polos_vis = nil
    end
-   if sgmparprops and sgmparals then
-      M.dibuja_curvas(sgmpar_vis)
+   if arcparprops and arcparals then
+      M.dibuja_curvas(arcpar_vis)
 
-      sgmpar_vis = nil
+      arcpar_vis = nil
    end
 --   if arcmaxprops and arcosmax then
 --      M.dibuja_curvas(arcmax_vis)
@@ -447,12 +445,12 @@ function M.polos(trandp, R, obs, polprops)
 end
 
 -- ----------------------------------------------------------------------------
-function M.sgmparals(transp, R, obs, sgmparprops, sgmparals)
+function M.arcparals(transp, R, obs, arcparprops, arcparals)
    local ptos_vis = {}
    local ptos_novis = {}
    
-   for index, sgmparal in ipairs(sgmparals) do
-      local th = math.rad(sgmparal.thetaD)
+   for index, arcparal in ipairs(arcparals) do
+      local th = math.rad(arcparal.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis
       local sth = math.sin(th)
       local cth = math.cos(th)
@@ -460,13 +458,13 @@ function M.sgmparals(transp, R, obs, sgmparprops, sgmparals)
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
 
-      loops = sgmparprops.loops
-      color_vis = sgmparal.color_vis or sgmparprops.color_vis
-      lw_vis = sgmparal.lw_vis or sgmparprops.lw_vis
-      color_novis = sgmparal.color_novis or sgmparprops.color_novis
-      lw_novis = sgmparal.lw_novis or sgmparprops.lw_novis
-      local ph1 = math.rad(sgmparal.phi1D)
-      local ph2 = math.rad(sgmparal.phi2D)
+      loops = arcparprops.loops
+      color_vis = arcparal.color_vis or arcparprops.color_vis
+      lw_vis = arcparal.lw_vis or arcparprops.lw_vis
+      color_novis = arcparal.color_novis or arcparprops.color_novis
+      lw_novis = arcparal.lw_novis or arcparprops.lw_novis
+      local ph1 = math.rad(arcparal.phi1D)
+      local ph2 = math.rad(arcparal.phi2D)
 
       -- Adapta el número de puntos según la longitud de cada segmento
       local pasos = math.ceil(math.abs(ph2-ph1) * loops * math.sin(th)/(2*math.pi))
@@ -497,7 +495,7 @@ function M.sgmparals(transp, R, obs, sgmparprops, sgmparals)
 	 last_u, last_v, last_vis = u, v, vis
 	 
       end -- for 0, pasos
-   end -- for index, sgmparalelo
+   end -- for index, arcparalelo
 
    return ptos_vis, ptos_novis
 end

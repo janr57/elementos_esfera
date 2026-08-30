@@ -1,4 +1,4 @@
--- esf_sgmpar_02.lua
+-- esf_arcosparal_02.lua
 
 return {
    -- 1. Datos y propiedades de la esfera:
@@ -32,14 +32,14 @@ return {
 --      color_novis = "black!40", radio_novis="1pt",
 --   },
 
-   -- 6. Segmentos de paralelos
-   sgmparprops = {
+   -- 6. Arcos de paralelos
+   arcparprops = {
       loops = 240,
       color_vis = "black!60", lw_vis = "1pt",
       color_novis = "black!30", lw_novis = "0.8pt",
    },
 
-   sgmparals = {
+   arcparals = {
       {thetaD = 60, phi1D = 45, phi2D = 200,},
       {thetaD = 90, phi1D = 0, phi2D = 60,},
       {thetaD = 110, phi1D = -160, phi2D = 40,},
