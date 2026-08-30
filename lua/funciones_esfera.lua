@@ -739,17 +739,17 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	 end -- type(giro) == "string" and giro
       end -- omega
       
-      ux = vec_u.ux
-      uy = vec_u.uy
-      uz = vec_u.uz
+      ux = vec_u[1]
+      uy = vec_u[2]
+      uz = vec_u[3]
       
-      vx = vec_v.vx
-      vy = vec_v.vy
-      vz = vec_v.vz
+      vx = vec_v[1]
+      vy = vec_v[2]
+      vz = vec_v[3]
       
-      wx = vec_w.wx
-      wy = vec_w.wy
-      wz = vec_w.wz
+      wx = vec_w[1]
+      wy = vec_w[2]
+      wz = vec_w[3]
       
       if delta_phi > math.pi and giro == "M" then
 	 signo_bucle = -1
@@ -807,7 +807,7 @@ end
 -- ----------------------------------------------------------------------------
 --
 function M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
-   local u, v, w
+   local vec_u, vec_v, vec_w
    local nx, ny, nz, nmod
    local ux, uy, uz
    local vx, vy, vz
@@ -830,11 +830,11 @@ function M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
    vy = ux*wz-wx*uz
    vz = wx*uy-ux*wy
    
-   u = {ux= ux, uy=uy, uz= uz}
-   v = {vx= vx, vy= vy, vz= vz}
-   w = {wx= wx, wy= wy, wz= wz}
+   vec_u = {ux, uy, uz}
+   vec_v = {vx, vy, vz}
+   vec_w = {wx, wy, wz}
    
-   return u, v, w
+   return vec_u, vec_v, vec_w
 end
 
 
