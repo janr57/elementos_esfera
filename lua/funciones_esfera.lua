@@ -631,7 +631,7 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
       local x1, y1, z1, x2, y2, z2, x3, y3, z3
       local ux, uy, uz, vx, vy, vz, wx, wy, wz
-      local vect_u, vect_v, vect_w
+      --local vec_u, vec_v, vec_w
       local nx, ny, nz, nmod
       local xp, yp, zp
       local delta_phi, omega, omegamin, omegamax, signo_bucle
@@ -716,18 +716,12 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	 z3 = math.cos(th3)
 	 
 	 if giro == 1 then
-	    u, v, w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
+	    vec_u, vec_v, vec_w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
 	    signo_bucle = 1
 	 elseif giro == -1 then
-	    u, v, w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
+	    vec_u, vec_v, vec_w = M.matriz_transformacion(x1, y1, z1, x3, y3, z3, R)
 	    signo_bucle = -1
 	 end
-
-	 tex.sprint(
-	    string.format(
-	       "\\node at (3.2,-0.5) {signobucle= %.2f};", signo_bucle
-	 ))
-	 
       else
 	 -- Los puntos no son antipodales: forman un arco.
 	 
@@ -737,25 +731,25 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
 	    dist = distmax
 	    omega = omegamax
-	    u, v, w = M.matriz_transformacion(x2, y2, z2, x1, y1, z1, R)
+	    vec_u, vec_v, vec_w = M.matriz_transformacion(x2, y2, z2, x1, y1, z1, R)
 	 elseif giro == "m" then
 	    dist = distmin
 	    omega = omegamin
-	    u, v, w = M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
+	    vec_u, vec_v, vec_w = M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
 	 end -- type(giro) == "string" and giro
       end -- omega
       
-      ux = u.ux
-      uy = u.uy
-      uz = u.uz
+      ux = vec_u.ux
+      uy = vec_u.uy
+      uz = vec_u.uz
       
-      vx = v.vx
-      vy = v.vy
-      vz = v.vz
+      vx = vec_v.vx
+      vy = vec_v.vy
+      vz = vec_v.vz
       
-      wx = w.wx
-      wy = w.wy
-      wz = w.wz
+      wx = vec_w.wx
+      wy = vec_w.wy
+      wz = vec_w.wz
       
       if delta_phi > math.pi and giro == "M" then
 	 signo_bucle = -1
