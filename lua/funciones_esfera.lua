@@ -651,7 +651,6 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       ph1 = math.rad(arcmax.phi1D)
       th2 = math.rad(arcmax.theta2D)
       ph2 = math.rad(arcmax.phi2D)
-      giro = arcmax.giro
       
       sth1 = math.sin(th1)
       cth1 = math.cos(th1)
@@ -695,10 +694,31 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       omegamax = math.abs(2*math.pi-omegamin)
       omega = omegamin
 
-      -- Proporciona un valor imposible
+      -- Proporciona incialmente un valor imposible
       signo_bucle = 0
-      
-      if math.abs(omega - math.pi) < 1e-5 then
+
+      if omega == 0 then
+	 -- Los puntos inicial y final son el mismo: círculo máximo
+	 distmin = 2 * math.pi * R
+	 distmax = distmin
+	 dist = distmax
+	 -- No contemplo el ángulo cero, sino 2pi
+	 omega = 2 * math.pi
+	 delta_phi = omega
+
+	 -- Ángulos del punto extra en radianes
+	 th3 = math.rad(arcmax.punto.thetaD)
+	 ph3 = math.rad(arcmax.punto.phiD)
+
+	 -- Coordenadas cartesianas del punto extra
+	 x3 = R * math.sin(th3) * math.cos(ph3)
+	 y3 = R * math.sin(th3) * math.sin(ph3)
+	 z3 = R * math.cos(th3)
+
+	 signo_bucle = 1
+	 vec_u, vec_v, vec_w = M.matriz_transformacion(x1,y1,z1,x3,y3,z3,R)
+	 
+      elseif math.abs(omega - math.pi) < 1e-5 then
 	 -- Los puntos son antipodales:
 	 -- En este caso hace falta algún dato más, como puede ser un punto
 	 -- adicional del arco.
@@ -706,6 +726,8 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	 -- punto 2 para determinar la normal y su perpendicular y la distancia que
 	 -- se dibuja es entre 1 y 2 (no 3, que se utiliza para poder definir el
 	 -- círculo máximo). Si se añade giro = -1, se dibuja el arco opuesto.
+	 giro = arcmax.giro
+
 	 -- Esféricas del punto
 	 th3 = math.rad(arcmax.punto.thetaD)
 	 ph3 = math.rad(arcmax.punto.phiD)
@@ -725,16 +747,22 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       else
 	 -- Los puntos no son antipodales: forman un arco.
 	 
+	 giro = arcmax.giro
+
 	 -- Si queremos el arco mayor, hay que cambiar la distancia entre 1 y 2
 	 -- en este caso (esto no ocutre cuando son antipodales)
 	 if giro == "M" then
 	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
 	    dist = distmax
 	    omega = omegamax
+	    delta_phi = omega
+	    signo_bucle = -1
 	    vec_u, vec_v, vec_w = M.matriz_transformacion(x2, y2, z2, x1, y1, z1, R)
 	 elseif giro == "m" then
 	    dist = distmin
 	    omega = omegamin
+	    delta_phi = omega
+	    signo_bucle = 1
 	    vec_u, vec_v, vec_w = M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
 	 end -- type(giro) == "string" and giro
       end -- omega
@@ -751,15 +779,15 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       wy = vec_w[2]
       wz = vec_w[3]
       
-      if delta_phi > math.pi and giro == "M" then
-	 signo_bucle = -1
-      elseif delta_phi > math.pi and giro == "m" then
-	 signo_bucle= 1
-      elseif delta_phi < math.pi and giro == "M" then
-	 signo_bucle = -1
-      elseif delta_phi < math.pi and giro == "m" then
-	 signo_bucle = 1
-      end
+--      if delta_phi > math.pi and giro == "M" then
+--	 signo_bucle = -1
+--      elseif delta_phi > math.pi and giro == "m" then
+--	 signo_bucle= 1
+--      elseif delta_phi < math.pi and giro == "M" then
+--	 signo_bucle = -1
+--      elseif delta_phi < math.pi and giro == "m" then
+--	 signo_bucle = 1
+--      end
       
       -- Adapta el número de puntos según la longitud de cada segmento
       pasos = math.ceil(loops * dist /(2 * math.pi * R))
@@ -770,18 +798,20 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 
       -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
       -- tramo por tramo
+      cz = R * cth
+      
       for i = 0, pasos do
 
 	 phi = (i * signo_bucle * omega /pasos) % (2 * math.pi)
 	 
 	 cx = R * sth * math.cos(phi)
 	 cy = R * sth * math.sin(phi)
-	 cz = R * cth
+--	 cz = R * cth
 
 	 -- Aplicamos la matriz de transformación
-	 xp = cx*ux+cy*vx+cz*wx
-	 yp = cx*uy+cy*vy+cz*wy
-	 zp = cx*uz+cy*vz+cz*wz
+	 xp = cx*ux + cy*vx + cz*wx
+	 yp = cx*uy + cy*vy + cz*wy
+	 zp = cx*uz + cy*vz + cz*wz
 	 
 	 u, v, vis = M.calcular_punto_y_visibilidad(xp, yp, zp, obs)
 	       
@@ -817,18 +847,18 @@ function M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
    uy = y1 / R
    uz = z1 / R
    
-   nx = y1*z2-y2*z1
-   ny = x2*z1-x1*z2
-   nz = x1*y2-x2*y1
+   nx = y1*z2 - y2*z1
+   ny = x2*z1 - x1*z2
+   nz = x1*y2 - x2*y1
    nmod = math.sqrt(nx^2 + ny^2 + nz^2)
 
    wx = nx / nmod
    wy = ny / nmod
    wz = nz / nmod
    
-   vx = wy*uz-uy*wz
-   vy = ux*wz-wx*uz
-   vz = wx*uy-ux*wy
+   vx = wy*uz - uy*wz
+   vy = ux*wz - wx*uz
+   vz = wx*uy - ux*wy
    
    vec_u = {ux, uy, uz}
    vec_v = {vx, vy, vz}
