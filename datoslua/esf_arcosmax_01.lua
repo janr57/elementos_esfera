@@ -70,14 +70,7 @@ return {
    },
 
    arcosmax = {
---      {theta1D = 130, phi1D = -100, theta2D = 10, phi2D = 290, giro = "m",},
---      {theta1D = 120, phi1D = 30, theta2D = 120, phi2D = 180,
---       punto = {thetaD = 90, phiD = 30}, giro=1},
---      {theta1D = 120, phi1D = 30, theta2D = 120, phi2D = 180,
---       punto = {thetaD = 90, phiD = 30}, giro=-1,color_vis="blue",color_novis="yellow"},
       {theta1D = 60, phi1D = -30, theta2D = 60, phi2D = 90, giro = "m"},
---      {theta1D = 90, phi1D = 0, theta2D = 90, phi2D = 180,
---       punto = {thetaD = 0, phiD = 0}, giro = 1,}
    },
 
 }

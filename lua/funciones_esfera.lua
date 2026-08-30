@@ -631,10 +631,11 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
       local x1, y1, z1, x2, y2, z2, x3, y3, z3
       local ux, uy, uz, vx, vy, vz, wx, wy, wz
+      local vect_u, vect_v, vect_w
       local nx, ny, nz, nmod
       local xp, yp, zp
       local delta_phi, omega, omegamin, omegamax, signo_bucle
-      local last_u, last_v, last_vis
+      local u, v, vis, last_u, last_v, last_vis
       local dot, phi, cx, cy, cz
       
       table.insert(ptos_vis, {})
@@ -788,7 +789,7 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	 yp = cx*uy+cy*vy+cz*wy
 	 zp = cx*uz+cy*vz+cz*wz
 	 
-	 local u, v, vis = M.calcular_punto_y_visibilidad(xp, yp, zp, obs)
+	 u, v, vis = M.calcular_punto_y_visibilidad(xp, yp, zp, obs)
 	       
 	 if i > 0 then
 	    if vis and last_vis then
