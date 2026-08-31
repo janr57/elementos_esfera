@@ -66,12 +66,12 @@ return {
    arcmaxprops = {
       loops = 240,
       color_vis = "red", lw_vis = "1.2pt",
-      color_novis = "yellow!50", lw_novis = "0.8pt",
+      color_novis = "orange!5", lw_novis = "1.1pt",
    },
 
    arcosmax = {
       {theta1D = 0, phi1D = 0, theta2D = 0, phi2D = 0,
-       punto = {thetaD=90, phiD=0}},
+       punto = {thetaD=90, phiD=-30}},
    },
 
 }
