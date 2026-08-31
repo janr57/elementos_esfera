@@ -56,11 +56,6 @@ return {
       {thetaD = 150},
    },
 
-   -- 5. Polos
-   polprops = {
-      color_vis = "black!70", radio_vis="1pt",
-      color_novis = "black!40", radio_novis="1pt",
-   },
    
    -- Arcos máximos
    arcmaxprops = {
@@ -72,6 +67,13 @@ return {
    arcosmax = {
       {theta1D = 0, phi1D = 0, theta2D = 0, phi2D = 0,
        punto = {thetaD=90, phiD=-30}},
+   },
+
+
+   -- 5. Polos
+   polprops = {
+      color_vis = "black!70", radio_vis="1pt",
+      color_novis = "black!40", radio_novis="1pt",
    },
 
 }

@@ -23,7 +23,8 @@ function M.dibuja_tikzesfera(transp, esc)
    local arcparals = esc.arcparals
    local arcmaxprops = esc.arcmaxprops
    local arcosmax = esc.arcosmax
---   local ptos = esc.puntos
+   local ptosprops = esc.ptosprops
+   local puntos = esc.puntos
 --   local planos = esc.planos
 
    -- DIBUJO DE ESFERA
@@ -98,21 +99,9 @@ function M.dibuja_tikzesfera(transp, esc)
       end
       arcpar_novis = nil  
    end
-   
---   -- Arcos máximos
---   if arcmaxprops and arcosmax then
---      local R = esf.radio
---      
---      arcmax_vis, arcmax_novis = M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
---      if transp then
---	 M.dibuja_curvas(arcmax_novis)
---      end
---      arcmax_novis = nil
---   end
 
    -- Arcos máximos
    if arcmaxprops and arcosmax then
-      
       local R = esf.radio
       
       arcmax_vis, arcmax_novis = M.arcsmaximos(transp,R,obs,arcmaxprops,arcosmax)
@@ -120,8 +109,19 @@ function M.dibuja_tikzesfera(transp, esc)
 	 M.dibuja_curvas(arcmax_novis)
 	 arcmax_novis = nil
       end
-
    end
+
+   -- Puntos
+   if ptosprops and puntos then	 
+      --M.log("INFO", "Inicio de puntos.")
+      local R = esf.radio
+      
+      ptos_vis, ptos_novis = M.puntos(transp, R, obs, ptosprops, puntos)
+      if transp then
+	 M.dibuja_puntos(ptos_novis)
+      end
+   end
+   
 
    -- -------------------------------------------------------------------------
    -- FASE 2: Dibujando elementos visibles
@@ -145,11 +145,6 @@ function M.dibuja_tikzesfera(transp, esc)
 
       arcpar_vis = nil
    end
---   if arcmaxprops and arcosmax then
---      M.dibuja_curvas(arcmax_vis)
---
---      arcmax_vis = nil
---   end
 
    if arcmaxprops and arcosmax then
       M.dibuja_curvas(arcmax_vis)
@@ -157,12 +152,32 @@ function M.dibuja_tikzesfera(transp, esc)
       arcmax_vis = nil
    end
 
-   
+   if ptosprops and puntos then
+      M.dibuja_puntos(ptos_vis)
+
+      ptos_vis = nil
+      --M.log("INFO", "Fin de puntos.")
+   end
+
 end
 
 -- ----------------------------------------------------------------------------
 
+-- Función para registrar mensajes
+function M.log(tipo, mensaje)
+    -- Abrir archivo en modo "append" (anexar)
+    local archivo = io.open("ejecucion.log", "a")
+    if not archivo then return end
 
+    -- Obtener fecha y hora actual
+    local fecha = os.date("%Y-%m-%d %H:%M:%S")
+
+    -- Escribir la línea de log
+    archivo:write(string.format("[%s] [%s] %s\n", fecha, tipo, mensaje))
+
+    -- Cerrar el archivo
+    archivo:close()
+end
 
 -- ----------------------------------------------------------------------------
 -- FUNCIONES AUXILIARES
@@ -171,6 +186,17 @@ function M.dibuja_polos(polos)
    local color, radio, u, v
    for i, polo in ipairs(polos) do
       color, radio, u, v = polo[1], polo[2], polo[3], polo[4]
+      tex.sprint(string.format(
+		    "\\fill[%s] (%f, %f) circle[radius=%s];",
+		    color, u, v, radio
+      ))
+   end
+end
+
+function M.dibuja_puntos(puntos)
+   local color, radio, u, v
+   for i, punto in ipairs(puntos) do
+      color, radio, u, v = punto[1], punto[2], punto[3], punto[4]
       tex.sprint(string.format(
 		    "\\fill[%s] (%f, %f) circle[radius=%s];",
 		    color, u, v, radio
@@ -399,7 +425,7 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
 end
 
 -- ----------------------------------------------------------------------------
-function M.polos(trandp, R, obs, polprops)
+function M.polos(transp, R, obs, polprops)
    local polos_vis = {}
    local polos_novis = {}
 
@@ -442,6 +468,44 @@ function M.polos(trandp, R, obs, polprops)
    end -- if vis
 
    return polos_vis, polos_novis
+end
+
+-- ----------------------------------------------------------------------------
+function M.puntos(transp, R, obs, ptosprops, puntos)
+   local ptos_vis = {}
+   local ptos_novis = {}
+
+   for index, punto in ipairs(puntos) do
+      local x, y, z
+      local u, v, vis
+      
+      local color_vis = punto.color_vis or ptosprops.color_vis
+      local radio_vis = punto.radio_vis or ptosprops.radio_vis
+      local color_novis = punto.color_novis or ptosprops.color_novis
+      local radio_novis = punto.radio_novis or ptosprops.radio_novis
+
+      local th = math.rad(punto.thetaD)
+      local ph = math.rad(punto.phiD)
+      
+      local sth = math.sin(th)
+      local cth = math.cos(th)
+      local sph = math.sin(ph)
+      local cph = math.cos(ph)
+      
+      x = R * sth * cph
+      y = R * sth * sph
+      z = R * cth
+      
+      u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      if vis then
+	 table.insert(ptos_vis, {color_vis, radio_vis, u, v})
+      elseif transp then
+	 table.insert(ptos_novis, {color_novis, radio_novis, u, v})
+      end -- if vis
+
+   end -- for index
+   
+   return ptos_vis, ptos_novis
 end
 
 -- ----------------------------------------------------------------------------

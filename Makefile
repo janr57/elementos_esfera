@@ -16,6 +16,7 @@ FILES =	elementos_esfera.pkg.sty\
 	texto/paralelos.tex\
 	texto/arcosparalelos.tex\
 	texto/arcosmax.tex\
+	texto/puntos.tex\
 	texto/extra.tex\
 	lua/funciones_esfera.lua\
 	datoslua/esf_bas_01.lua\
@@ -30,6 +31,16 @@ FILES =	elementos_esfera.pkg.sty\
 	datoslua/esf_arcosparal_01.lua\
 	datoslua/esf_arcosparal_02.lua\
 	datoslua/esf_arcosmax_01.lua\
+	datoslua/esf_arcosmax_02.lua\
+	datoslua/esf_arcosmax_03.lua\
+	datoslua/esf_arcosmax_04.lua\
+	datoslua/esf_arcosmax_05.lua\
+	datoslua/esf_arcosmax_06.lua\
+	datoslua/esf_arcosmax_07.lua\
+	datoslua/esf_arcosmax_08.lua\
+	datoslua/esf_arcosmax_09.lua\
+	datoslua/esf_arcosmax_10.lua\
+	datoslua/esf_puntos_01.lua\
 	datoslua/esf_merpar_01.lua\
 	$(IMGSTATICDIR)/Cc-by-nc-sa_icon.pdf
 

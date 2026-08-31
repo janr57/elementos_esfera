@@ -1,22 +1,32 @@
 -- esf_puntos_01.lua
+--
+-- Copyright (C) 2022--2026 José A. Navarro Ramón <janr.devel@gmail.com>
+-- Licencia del código GPLv2
+-- Licencia Creative Commons Recognition Non-Commercial Share-alike.
+-- (CC-BY-NC-SA)
 
 return {
+
    -- 1. Datos y propiedades de la esfera:
    esfera = {
       radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,
    },
 
-   smbresfera = {ballcolor="green", opac=0.4},
+   smbresfera = {ballcolor="white", opac=0.4},   
 
+   
    -- 2, Posición angular del observador
    observador = {thetaD = 65, phiD = 15},
 
-   -- 3. Meridianos
+
+  -- 3. Meridianos
    meridprops = {
-      loops = 120, color_vis = "black!70", lw_vis="0.6pt",
-      color_novis = "black!35", lw_novis="0.35pt",
+      loops = 120, color_vis = "black!60", lw_vis="0.4pt",
+      color_novis = "black!30", lw_novis="0.3pt",
    },
 
+   -- Si se quiere modificar el estilo de algún meridiano en particular, se 
+   -- puede añadir el estilo deseado en el elemento correspondiente de la tabla:
    meridianos = {
       {phiD = 0,},
       {phiD = 30},
@@ -31,11 +41,11 @@ return {
       {phiD = -120},
       {phiD = -150}
    },
-   
+
    -- 4. Paralelos
    paralprops = {
-      loops = 240, color_vis = "black!60", lw_vis="0.5pt",
-      color_novis = "black!40", lw_novis="0.35pt",
+      loops = 240, color_vis = "black!60", lw_vis="0.4pt",
+      color_novis = "black!30", lw_novis="0.3pt",
    },
 
    paralelos = {
@@ -48,18 +58,19 @@ return {
 
    -- 5. Polos
    polprops = {
-      color_vis = "black", radio_vis = "1.2pt",
-      color_novis = "black!50", radio_novis = "1pt",
+      color_vis = "black!70", radio_vis="1pt",
+      color_novis = "black!40", radio_novis="1pt",
    },
 
-   -- 6. Puntos
+   -- Puntos
    ptosprops = {
-      color_vis = "black", radio_vis = "1.2pt",
-      color_novis = "black!50", radio_novis = "1pt",
+      color_vis = "black", radio_vis = "1.5pt",
+      color_novis = "black!30", radio_novis = "1.2pt",
    },
 
    puntos = {
-      {thetaD = 90, phiD = 0},
+      {thetaD = 60, phiD = 0},
+      {thetaD = 90, phiD = 180},
    },
 
 }
