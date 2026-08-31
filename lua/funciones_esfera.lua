@@ -84,7 +84,7 @@ function M.dibuja_tikzesfera(transp, esc)
       local R = esf.radio
       polos_vis, polos_novis = M.polos(transp, R, obs, polprops)
       if transp then
-	 M.dibuja_polos(polos_novis)
+	 M.dibuja_puntos(polos_novis)
       end
       polos_novis = nil
    end
@@ -113,7 +113,6 @@ function M.dibuja_tikzesfera(transp, esc)
 
    -- Puntos
    if ptosprops and puntos then	 
-      --M.log("INFO", "Inicio de puntos.")
       local R = esf.radio
       
       ptos_vis, ptos_novis = M.puntos(transp, R, obs, ptosprops, puntos)
@@ -130,16 +129,19 @@ function M.dibuja_tikzesfera(transp, esc)
       M.dibuja_curvas(merid_vis)
       merid_vis = nil
    end
+   
    if paralprops and paralelos then
       M.dibuja_curvas(paral_vis)
       
       merid_vis = nil
    end
+   
    if polprops then
-      M.dibuja_polos(polos_vis)
+      M.dibuja_puntos(polos_vis)
 
       polos_vis = nil
    end
+   
    if arcparprops and arcparals then
       M.dibuja_curvas(arcpar_vis)
 
@@ -156,43 +158,33 @@ function M.dibuja_tikzesfera(transp, esc)
       M.dibuja_puntos(ptos_vis)
 
       ptos_vis = nil
-      --M.log("INFO", "Fin de puntos.")
    end
 
 end
 
 -- ----------------------------------------------------------------------------
 
--- Función para registrar mensajes
-function M.log(tipo, mensaje)
-    -- Abrir archivo en modo "append" (anexar)
-    local archivo = io.open("ejecucion.log", "a")
-    if not archivo then return end
+---- Función para registrar mensajes
+--function M.log(tipo, mensaje)
+--    -- Abrir archivo en modo "append" (anexar)
+--    local archivo = io.open("ejecucion.log", "a")
+--    if not archivo then return end
+--
+--    -- Obtener fecha y hora actual
+--    local fecha = os.date("%Y-%m-%d %H:%M:%S")
+--
+--    -- Escribir la línea de log
+--    archivo:write(string.format("[%s] [%s] %s\n", fecha, tipo, mensaje))
+--
+--    -- Cerrar el archivo
+--    archivo:close()
+--end
 
-    -- Obtener fecha y hora actual
-    local fecha = os.date("%Y-%m-%d %H:%M:%S")
-
-    -- Escribir la línea de log
-    archivo:write(string.format("[%s] [%s] %s\n", fecha, tipo, mensaje))
-
-    -- Cerrar el archivo
-    archivo:close()
-end
+    --M.log("INFO", "Fin de puntos.")
 
 -- ----------------------------------------------------------------------------
 -- FUNCIONES AUXILIARES
 -- ----------------------------------------------------------------------------
-function M.dibuja_polos(polos)
-   local color, radio, u, v
-   for i, polo in ipairs(polos) do
-      color, radio, u, v = polo[1], polo[2], polo[3], polo[4]
-      tex.sprint(string.format(
-		    "\\fill[%s] (%f, %f) circle[radius=%s];",
-		    color, u, v, radio
-      ))
-   end
-end
-
 function M.dibuja_puntos(puntos)
    local color, radio, u, v
    for i, punto in ipairs(puntos) do
