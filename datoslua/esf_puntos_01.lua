@@ -64,8 +64,8 @@ return {
 
    -- Puntos
    ptosprops = {
-      color_vis = "black", radio_vis = "1.5pt",
-      color_novis = "black!30", radio_novis = "1.2pt",
+      color_vis = "red", radio_vis = "1.5pt",
+      color_novis = "red!50", radio_novis = "1.3pt",
    },
 
    puntos = {

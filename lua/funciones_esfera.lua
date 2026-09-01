@@ -25,6 +25,11 @@ function M.dibuja_tikzesfera(transp, esc)
    local arcosmax = esc.arcosmax
    local ptosprops = esc.ptosprops
    local puntos = esc.puntos
+   local ppvptosprops = esc.ppvptosprops
+   local ppvplnsprops = esc.ppvplnsprops
+   local ppvvectsprops = esc.ppvvectsprops
+   local ppvs = esc.ppvs
+   
 --   local planos = esc.planos
 
    -- DIBUJO DE ESFERA
@@ -114,14 +119,22 @@ function M.dibuja_tikzesfera(transp, esc)
    -- Puntos
    if ptosprops and puntos then	 
       local R = esf.radio
-      
+
       ptos_vis, ptos_novis = M.puntos(transp, R, obs, ptosprops, puntos)
       if transp then
 	 M.dibuja_puntos(ptos_novis)
       end
    end
-   
 
+   -- Puntos, planos y vectores
+   if ppvptosprops and ppvplnsprops and ppvs then
+      local R = esf.radio
+      local tblprops = {ppvptosprops, ppvplnsprops, ppvvectsprops}
+      
+      ptos_vis, plns_novis, vects_vis = M.ppvs(transp, R, obs, tblprops, ppvs)
+   end
+
+   
    -- -------------------------------------------------------------------------
    -- FASE 2: Dibujando elementos visibles
    -- Dibujo de todos los puntos visibles
@@ -160,27 +173,14 @@ function M.dibuja_tikzesfera(transp, esc)
       ptos_vis = nil
    end
 
+   if ppvptosprops and ppvplnsprops and ppvs then
+      M.dibuja_puntos(ptos_vis)
+   end
+
 end
 
 -- ----------------------------------------------------------------------------
 
----- Función para registrar mensajes
---function M.log(tipo, mensaje)
---    -- Abrir archivo en modo "append" (anexar)
---    local archivo = io.open("ejecucion.log", "a")
---    if not archivo then return end
---
---    -- Obtener fecha y hora actual
---    local fecha = os.date("%Y-%m-%d %H:%M:%S")
---
---    -- Escribir la línea de log
---    archivo:write(string.format("[%s] [%s] %s\n", fecha, tipo, mensaje))
---
---    -- Cerrar el archivo
---    archivo:close()
---end
-
-    --M.log("INFO", "Fin de puntos.")
 
 -- ----------------------------------------------------------------------------
 -- FUNCIONES AUXILIARES
@@ -891,6 +891,106 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 end
 
 -- ----------------------------------------------------------------------------
+-- Puntos, planos y vectores
+function M.ppvs(transp, R, obs, tblprops, ppvs)
+   local ptos_vis = {}
+   local plns_vis = {}
+   local vects_vis = {}
+
+   -- Recuperamos las tablas de propiedades
+   local ptosprops = tblprops[1]
+   local plnsprops = tblprops[2]
+   local vectsprops = tblprops[3]
+
+   for index, ppv in ipairs(ppvs) do
+      local u, v, vis
+      local punto = ppv.punto
+      local plano = ppv.plano
+      local vects = ppv.vects
+      
+      local th = math.rad(punto.thetaD)
+      local ph = math.rad(punto.phiD)
+      local pto_dibuja = punto.dibuja_punto or ptosprops.dibuja_punto
+      local ptocolor = punto.color or ptosprops.color
+      local ptoradio = punto.radio or ptosprops.radio
+
+      local sth = math.sin(th)
+      local cth = math.cos(th)
+      local sph = math.sin(ph)
+      local cph = math.cos(ph)
+
+      local plnancho = plano.ancho
+      local plnalto = plano.alto
+      local plnangD = plano.angD or plnsprops.angD
+
+      -- Girar punto (R,th,ph) un ángulo (theta, girophi)
+      -- Coordenadas cartesianas del punto en la posición ecuatorial
+      local ptox, ptoy, ptoz
+      ptox = 2
+      ptoy = 0
+      ptoz = 0
+      
+      local girotheta, girophi
+      girotheta = th - math.pi/2
+      girophi = ph - 0
+
+      local x, y, z
+      x, y, z = M.giro_theta_phi(ptox, ptoy, ptoz, girotheta, girophi)
+      
+      -- Coordenadas cartesianas del punto en la posición ecuatorial
+--      local px = R * math.sin(th) * math.cos(ph)
+--      local py = R * math.sin(th) * math.sin(ph)
+--      local pz = R * math.cos(th)
+	 u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
+	 if pto_dibuja and vis then
+	    table.insert(ptos_vis, {ptocolor, ptoradio, u, v})
+	 end
+   end
+   return ptos_vis, plns_vis, vects_vis
+end
+
+--   -- Puntos
+--   ppvptosprops = {
+--      color = "red", radio = "1.5pt", visible = false
+--   },
+--   -- Planos
+--   ppvplnsprops = {
+--      angD = 0, draw = "blue", fill = "blue!40", opac = 0.5
+--   },
+--   -- Vectores (la dirección y sentido o ángulo se determina para cada vector)
+--   ppvvectsprops = {
+--      color = "black", modulo = 1.0
+--   },
+
+--   ppvs = {
+--      {
+--	 punto = {thetaD = 60, phiD = 0},
+--	 plano = {ancho = 0.3, alto = 0.3},
+--	 vects = {
+--	    vect = {ang = 0},
+--	    vect = {ang = 90},
+--	 },
+--      },
+--   },
+
+
+-- ----------------------------------------------------------------------------
+
+--x, y, z = M.giro_theta_phi(x, y, z, girotheta, girophi)
+function M.giro_theta_phi(x, y, z, th, ph)
+   local xprima, yprima, zprima
+   local sth = math.sin(th)
+   local cth = math.cos(th)
+   local sph = math.sin(ph)
+   local cph = math.cos(ph)
+   
+   xprima = x * cth * cph - y * sph + z * sth * cph
+   yprima = x * cth * sph + y * cph + z * sth * sph
+   zprima = -x * sth + z * cth
+
+   return xprima, yprima, zprima
+end
+
 --
 function M.matriz_transformacion(x1, y1, z1, x2, y2, z2, R)
    local vec_u, vec_v, vec_w
@@ -968,6 +1068,25 @@ function M.calcular_punto_y_visibilidad(x, y, z, obs)
     
     return u, v, visible
 end
+-- ----------------------------------------------------------------------------
+-- Función para registrar mensajes
+function M.log(tipo, mensaje)
+    -- Abrir archivo en modo "append" (anexar)
+    local archivo = io.open("ejecucion.log", "a")
+    if not archivo then return end
+
+    -- Obtener fecha y hora actual
+    local fecha = os.date("%Y-%m-%d %H:%M:%S")
+
+    -- Escribir la línea de log
+    archivo:write(string.format("[%s] [%s] %s\n", fecha, tipo, mensaje))
+
+    -- Cerrar el archivo
+    archivo:close()
+end
+
+-- M.log("INFO", "Fin de puntos.")
+
 -- ----------------------------------------------------------------------------
 
 
