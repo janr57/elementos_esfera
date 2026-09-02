@@ -66,7 +66,7 @@ return {
    -- Propiedades generales ppv:
    -- Puntos
    ppvptosprops = {
-      color = "red", radio = "1.5pt", dibuja = true,
+      color = "red", radio = "1.2pt", dibuja = true,
    },
    -- Planos
    ppvplnsprops = {
@@ -78,23 +78,25 @@ return {
    },
    
    ppvs = {
+      -- 1
       {
 	 punto = {thetaD = 90, phiD = 0,},
-	 plano = {ancho = 0.3, alto = 0.3,},
+	 plano = {ancho = 1.5, alto = 1.5,},
 	 vects = {
 	    {ang = 0,},
 	    {ang = 90,},
 	 },
       },
       
---      {
---	 punto = {thetaD = 0, phiD = 0,},
---	 plano = {ancho = 0.3, alto = 0.3,},
---	 vects = {
---	    {ang = 0,},
---	    {ang = 90,},
---	 },
---      },
+      -- 2
+      {
+	 punto = {thetaD = 0, phiD = 0,},
+	 plano = {ancho = 1.5, alto = 1.5,},
+	 vects = {
+	    {ang = 0,},
+	    {ang = 90,},
+	 },
+      },
    },
 }
 

@@ -217,28 +217,28 @@ function M.dibuja_planos(planos)
 --	    "\\node at (3,3) {(draw,fill,opac)= (%s, %s, %.2f)};", draw, fill, opac
 --      ))
 
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,2.5) {(u1,v1)= (%.2f, %.2f)};", u1, v1
-      ))
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,2) {(u2,v2)= (%.2f, %.2f)};", u2, v2
-      ))
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,1.5) {(u3,v3)= (%.2f, %.2f)};", u3, v3
-      ))
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,1) {(u4,v4)= (%.2f, %.2f)};", u4, v4
-      ))
-      
 --      tex.sprint(
 --	 string.format(
---	    "\\filldraw[draw=%s,fill=%s,opacity=%f] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
---	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
+--	    "\\node at (3,2.5) {(u1,v1)= (%.2f, %.2f)};", u1, v1
 --      ))
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,2) {(u2,v2)= (%.2f, %.2f)};", u2, v2
+--      ))
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,1.5) {(u3,v3)= (%.2f, %.2f)};", u3, v3
+--      ))
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,1) {(u4,v4)= (%.2f, %.2f)};", u4, v4
+--      ))
+      
+      tex.sprint(
+	 string.format(
+	    "\\filldraw[draw=%s,fill=%s,opacity=%f] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
+	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
+      ))
 
 --      tex.sprint(
 --	 string.format(
@@ -1073,14 +1073,14 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       end
    end
    
-   tex.sprint(
-      string.format(
-	 "\\node at (3,4) {ptosvislen= %.2f};", #ptos_vis
-   ))
-   tex.sprint(
-      string.format(
-	 "\\node at (3,3.5) {plnsvislen= %.2f};", #plns_vis
-   ))
+--   tex.sprint(
+--      string.format(
+--	 "\\node at (3,4) {ptosvislen= %.2f};", #ptos_vis
+--   ))
+--   tex.sprint(
+--      string.format(
+--	 "\\node at (3,3.5) {plnsvislen= %.2f};", #plns_vis
+--   ))
    
    return ptos_vis, plns_vis, vects_vis
 end
