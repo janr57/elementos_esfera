@@ -70,12 +70,17 @@ return {
    },
    -- Planos
    ppvplnsprops = {
-      giroD = 0, draw = "blue", fill = "blue!40", opac = 0.75, dibuja = true,
+      giro_planoD = 0, draw = "blue", fill = "blue!40", opac = 0.75, dibuja = true,
    },
    -- Vectores (la dirección y sentido o ángulo se determina para cada vector)
    ppvvectsprops = {
-      color = "black", lw = "1pt", dibuja = true
+      color = "black", lw = "0.66pt", arrow_length="4pt", arrow_width="3pt",
+      dibuja = true
    },
+--   ppvvectsprops = {
+--      color = "black", lw = "0.66pt", arrow = "-{Latex[length=4.5pt,width=3pt]}",
+--      dibuja = true
+--   },
    
    ppvs = {
       -- 1
@@ -83,20 +88,20 @@ return {
 	 punto = {thetaD = 90, phiD = 0,},
 	 plano = {ancho = 2.0, alto = 2.0,},
 	 vects = {
-	    {mod = 0.5, angD = 0,},
---	    {mod = 0.5, angD = 90,},
+	    {mod = 0.65, angD = 0,},
+	    {mod = 0.65, angD = 90,},
 	 },
       },
       
       -- 2
---      {
---	 punto = {thetaD = 0, phiD = 0,},
---	 plano = {ancho = 2.0, alto = 2.0, draw="red", fill="red!50"},
---	 vects = {
---	    {mod = 0.5, angD = 0,},
---	    {mod = 0.5, angD = 90,},
---	 },
---      },
+      {
+	 punto = {thetaD = 0, phiD = 0,},
+	 plano = {ancho = 2.0, alto = 2.0, draw="red", fill="red!50"},
+	 vects = {
+	    {mod = 0.65, angD = 0, },
+	    {mod = 0.65, angD = 90,},
+	 },
+      },
    },
 }
 

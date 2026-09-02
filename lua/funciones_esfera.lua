@@ -172,7 +172,7 @@ function M.dibuja_tikzesfera(transp, esc)
 
    if ppvptosprops and ppvplnsprops and ppvvectsprops and ppvs then
       M.dibuja_planos(plns_vis)
-      --M.dibuja_vectores(vects_vis)
+      M.dibuja_vectores(vects_vis)
       M.dibuja_puntos(ptos_vis)
    end
 
@@ -198,7 +198,7 @@ end
 function M.dibuja_planos(planos)
    local draw, fill, opac
    local u1, v1, u2, v2, u3, v3, u4, v4
-   for i, plano  in ipairs(planos) do
+   for i, plano in ipairs(planos) do
       draw = plano.draw
       fill = plano.fill
       opac = plano.opac
@@ -211,43 +211,59 @@ function M.dibuja_planos(planos)
       u4 = plano.u4
       v4 = plano.v4
 
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,3) {(draw,fill,opac)= (%s, %s, %.2f)};", draw, fill, opac
---      ))
-
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,2.5) {(u1,v1)= (%.2f, %.2f)};", u1, v1
---      ))
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,2) {(u2,v2)= (%.2f, %.2f)};", u2, v2
---      ))
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,1.5) {(u3,v3)= (%.2f, %.2f)};", u3, v3
---      ))
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,1) {(u4,v4)= (%.2f, %.2f)};", u4, v4
---      ))
-      
       tex.sprint(
 	 string.format(
 	    "\\filldraw[draw=%s,fill=%s,opacity=%f] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
 	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
       ))
-
---      tex.sprint(
---	 string.format(
---	    "\\filldraw[draw=%s,fill=%s] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
---	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
---      ))
    end
 end
 
 
+function M.dibuja_vectores(vects)
+   local color, lw, arrow
+   local ou, ov, u, v
+   
+   tex.sprint(
+      string.format(
+	 [[\node at (3,4) {vectslen= %.2f};]], #vects
+   ))
+      
+   for i, vector in ipairs(vects) do
+      color = vector.color
+      lw = vector.lw
+      arrow_length = vector.arrow_length
+      arrow_width = vector.arrow_width
+      ou = vector.ou
+      ov = vector.ov
+      u = vector.u
+      v = vector.v
+
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,3.5) {(color,lw)= (%s, %s)};]], color, lw
+--      ))
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,3) {(length,width)= (%s, %s)};]], arrow_length,arrow_width
+--      ))
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,2.5) {(ou,ov)= (%.2f, %.2f)};]], ou, ov
+--      ))
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,2) {(u,v)= (%.2f, %.2f)};]], u, v
+--      ))
+
+      tex.sprint(
+	 string.format(
+	    [[\draw[%s,line width=%s,-{Latex[length=%s,width=%s]}]              (%f,%f) -- (%f,%f);]],
+	    color, lw, arrow_length, arrow_width, ou, ov, u, v
+      ))
+   end
+end
+-- "-{Latex[length=4.5pt,width=3pt]}"
 
 function M.dibuja_curvas(ptos_vis)
    local v1, v2, v3, v4, v5, v6
@@ -1010,7 +1026,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local pln_opac = plano.opac or plnsprops.opac
       local pln_ancho = plano.ancho
       local pln_alto = plano.alto
-      local pln_giro = math.rad(plano.giroD or plnsprops.giroD)
+      local pln_giro = math.rad(plano.giro_planoD or plnsprops.giro_planoD)
       local pln_dibuja = plano.dibuja or plnsprops.dibuja
 
 --      tex.sprint(
@@ -1087,9 +1103,8 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       end
 
       -- VECTORES
-      --ppvvectsprops.color
       -- En cada entrada de punto hay un plano, pero puede haber muchos vectores
-      table.insert(vects_vis, {})
+--      table.insert(vects_vis, {})
 
 --      tex.sprint("\\node at (3,5) {Llega aquí};")
 --      tex.sprint(
@@ -1100,6 +1115,8 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       for indvect, vect in ipairs(vects) do
 	 local vect_color = vect.color or vectsprops.color
 	 local vect_lw = vect.lw or vectsprops.lw
+	 local vect_arrow_length = vect.arrow_length or vectsprops.arrow_length
+	 local vect_arrow_width = vect.arrow_width or vectsprops.arrow_width
 	 local vect_dibuja = vect.dibuja or vectsprops.dibuja
 	 local vect_mod = vect.mod
 	 local vect_ang = math.rad(vect.angD)
@@ -1128,6 +1145,10 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
 	 vx = pto_x
 	 vy = pto_y + vect_mod * math.cos(vect_ang)
 	 vz = pto_z + vect_mod * math.sin(vect_ang)
+
+	 -- Giramos el vector de acuerdo con el ángulo de giro para el plano
+	 vy = vy * math.cos(pln_giro) - vz * math.sin(pln_giro)
+	 vz = vy * math.sin(pln_giro) + vz * math.cos(pln_giro)
 	 
 --	 tex.sprint(
 --	    string.format(
@@ -1157,7 +1178,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       if vect_dibuja and pto_dibuja then
 	 table.insert(vects_vis,
 		      {
-			 color= vect_draw, lw= vect_lw,
+			 color= vect_color, lw= vect_lw,
+			 arrow_length= vect_arrow_length,
+			 arrow_width = vect_arrow_width,
 			 ou= pto_u, ov = pto_v,
 			 u= u, v= v,
 		      }
