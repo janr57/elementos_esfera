@@ -212,19 +212,31 @@ function M.dibuja_planos(planos)
       u4 = plano.u4
       v4 = plano.v4
 
-      tex.sprint(
-	 string.format(
-	    "\\node at (3,3) {(draw,fill,opac)= (%s, %s, %.2f)};", draw, fill, opac
-      ))
-
 --      tex.sprint(
 --	 string.format(
---	    "\\node at (3,2.5) {opac= %.2f};", opac
+--	    "\\node at (3,3) {(draw,fill,opac)= (%s, %s, %.2f)};", draw, fill, opac
 --      ))
+
+      tex.sprint(
+	 string.format(
+	    "\\node at (3,2.5) {(u1,v1)= (%.2f, %.2f)};", u1, v1
+      ))
+      tex.sprint(
+	 string.format(
+	    "\\node at (3,2) {(u2,v2)= (%.2f, %.2f)};", u2, v2
+      ))
+      tex.sprint(
+	 string.format(
+	    "\\node at (3,1.5) {(u3,v3)= (%.2f, %.2f)};", u3, v3
+      ))
+      tex.sprint(
+	 string.format(
+	    "\\node at (3,1) {(u4,v4)= (%.2f, %.2f)};", u4, v4
+      ))
       
 --      tex.sprint(
 --	 string.format(
---	    "\\filldraw[draw=%s,fill=%s,opac=%f] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
+--	    "\\filldraw[draw=%s,fill=%s,opacity=%f] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
 --	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
 --      ))
 
@@ -1015,7 +1027,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       x1, y1, z1 = M.giro_theta_phi(p1x, p1y, p1z, giro_theta, giro_phi)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u1, v1, vis1
-      u1, v1, vis1 = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      u1, v1, vis1 = M.calcular_punto_y_visibilidad(x1, y1, z1, obs)
       -- Punto 2 del plano
       -- Coordenadas cartesianas respecto de la posición en el ecuador
       -- del segundo punto del plano
@@ -1027,7 +1039,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       x2, y2, z2 = M.giro_theta_phi(p2x, p2y, p2z, giro_theta, giro_phi)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u2, v2, vis2
-      u2, v2, vis2 = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      u2, v2, vis2 = M.calcular_punto_y_visibilidad(x2, y2, z2, obs)
       -- Punto 3 del plano
       -- Coordenadas cartesianas respecto de la posición del punto en el ecuador
       -- del tercer punto del plano
@@ -1039,7 +1051,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       x3, y3, z3 = M.giro_theta_phi(p3x, p3y, p3z, giro_theta, giro_phi)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u3, v3, vis3
-      u3, v3, vis3 = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      u3, v3, vis3 = M.calcular_punto_y_visibilidad(x3, y3, z3, obs)
       -- Punto 4 del plano
       -- Coordenadas cartesianas respecto de la posición del punto en el ecuador
       local p4x = pto_x
@@ -1050,7 +1062,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       x4, y4, z4 = M.giro_theta_phi(p4x, p4y, p4z, giro_theta, giro_phi)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u4, v4, vis4
-      u4, v4, vis4 = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      u4, v4, vis4 = M.calcular_punto_y_visibilidad(x4, y4, z4, obs)
       if pln_dibuja and vis1 and vis2 and vis3 and vis4 then
 	 table.insert(plns_vis,
 		      {
