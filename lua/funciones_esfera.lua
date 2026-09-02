@@ -173,7 +173,7 @@ function M.dibuja_tikzesfera(transp, esc)
    end
 
    if ppvptosprops and ppvplnsprops and ppvs then
-      --M.dibuja_planos(plns_vis)
+      M.dibuja_planos(plns_vis)
       M.dibuja_puntos(ptos_vis)
    end
 
@@ -196,14 +196,43 @@ function M.dibuja_puntos(puntos)
    end
 end
 
-function M.dibuja_planos(puntos)
-   local draw, fill, color, u, v
-   for i, punto  in ipairs(puntos) do
-      color, radio, u, v = punto[1], punto[2], punto[3], punto[4]
-      tex.sprint(string.format(
-		    "\\fill[%s] (%f, %f) circle[radius=%s];",
-		    color, u, v, radio
+function M.dibuja_planos(planos)
+   local draw, fill, opac
+   local u1, v1, u2, v2, u3, v3, u4, v4
+   for i, plano  in ipairs(planos) do
+      draw = plano.draw
+      fill = plano.fill
+      opac = plano.opac
+      u1 = plano.u1
+      v1 = plano.v1
+      u2 = plano.u2
+      v2 = plano.v2
+      u3 = plano.u3
+      v3 = plano.v3
+      u4 = plano.u4
+      v4 = plano.v4
+
+      tex.sprint(
+	 string.format(
+	    "\\node at (3,3) {(draw,fill,opac)= (%s, %s, %.2f)};", draw, fill, opac
       ))
+
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,2.5) {opac= %.2f};", opac
+--      ))
+      
+--      tex.sprint(
+--	 string.format(
+--	    "\\filldraw[draw=%s,fill=%s,opac=%f] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
+--	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
+--      ))
+
+--      tex.sprint(
+--	 string.format(
+--	    "\\filldraw[draw=%s,fill=%s] (%f,%f)--(%f,%f)--(%f,%f)--(%f,%f)--cycle;",
+--	    draw, fill, opac, u1, v1, u2, v2, u3, v3, u4, v4
+--      ))
    end
 end
 
@@ -965,11 +994,16 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       -- Características tomadas de los datos
       local pln_draw = plano.draw or plnsprops.draw
       local pln_fill = plano.fill or plnsprops.fill
-      local pln_opac = plano.fill or plnsprops.opac
+      local pln_opac = plano.opac or plnsprops.opac
       local pln_ancho = plano.ancho
       local pln_alto = plano.alto
       local pln_angD = plano.angD or plnsprops.angD
       local pln_dibuja = plano.dibuja or plnsprops.dibuja
+
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,-2) {plnopac= %.2f};", pln_opac
+--      ))
       -- Punto 1 del plano
       -- Coordenadas cartesianas respecto de la posición en el ecuador
       -- del primer punto del plano
@@ -982,9 +1016,6 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u1, v1, vis1
       u1, v1, vis1 = M.calcular_punto_y_visibilidad(x, y, z, obs)
---      if pln_dibuja and vis then
---	 table.insert(plns_vis, draw=pln_draw, fill=pln_fill, opac=pln_opac, {u, v)}
---      end
       -- Punto 2 del plano
       -- Coordenadas cartesianas respecto de la posición en el ecuador
       -- del segundo punto del plano
@@ -997,32 +1028,28 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u2, v2, vis2
       u2, v2, vis2 = M.calcular_punto_y_visibilidad(x, y, z, obs)
---      if pln_dibuja and vis then
---	 table.insert(plns_vis, {u, v)}	 
---      end
       -- Punto 3 del plano
-      -- Coordenadas cartesianas respecto de la posición en el ecuador
+      -- Coordenadas cartesianas respecto de la posición del punto en el ecuador
       -- del tercer punto del plano
       local p3x = pto_x
       local p3y = pto_y + pln_ancho/2
       local p3z = pto_z + pln_alto/2
       -- Nuevas coordenadas cartesianas del punto del plano en la posición final
       local x3, y3, z3
-       x3, y3, z3 = M.giro_theta_phi(p3x, p3y, p3z, giro_theta, giro_phi)
-       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
-       local u3, v3, vis3
+      x3, y3, z3 = M.giro_theta_phi(p3x, p3y, p3z, giro_theta, giro_phi)
+      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
+      local u3, v3, vis3
       u3, v3, vis3 = M.calcular_punto_y_visibilidad(x, y, z, obs)
---      if pln_dibuja and vis then
---	 table.insert(plns_vis, {u, v})
---      end
+      -- Punto 4 del plano
+      -- Coordenadas cartesianas respecto de la posición del punto en el ecuador
       local p4x = pto_x
       local p4y = pto_y - pln_ancho/2
       local p4z = pto_z + pln_alto/2
       -- Nuevas coordenadas cartesianas del punto del plano en la posición final
       local x4, y4, z4
-       x4, y4, z4 = M.giro_theta_phi(p4x, p4y, p4z, giro_theta, giro_phi)
-       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
-       local u4, v4, vis4
+      x4, y4, z4 = M.giro_theta_phi(p4x, p4y, p4z, giro_theta, giro_phi)
+      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
+      local u4, v4, vis4
       u4, v4, vis4 = M.calcular_punto_y_visibilidad(x, y, z, obs)
       if pln_dibuja and vis1 and vis2 and vis3 and vis4 then
 	 table.insert(plns_vis,
@@ -1033,10 +1060,14 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
 	 )
       end
    end
-
+   
    tex.sprint(
       string.format(
 	 "\\node at (3,4) {ptosvislen= %.2f};", #ptos_vis
+   ))
+   tex.sprint(
+      string.format(
+	 "\\node at (3,3.5) {plnsvislen= %.2f};", #plns_vis
    ))
    
    return ptos_vis, plns_vis, vects_vis

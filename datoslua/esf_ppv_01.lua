@@ -79,7 +79,7 @@ return {
    
    ppvs = {
       {
-	 punto = {thetaD = 60, phiD = 0,},
+	 punto = {thetaD = 90, phiD = 0,},
 	 plano = {ancho = 0.3, alto = 0.3,},
 	 vects = {
 	    {ang = 0,},
@@ -87,14 +87,14 @@ return {
 	 },
       },
       
-      {
-	 punto = {thetaD = 90, phiD = 30,},
-	 plano = {ancho = 0.3, alto = 0.3,},
-	 vects = {
-	    {ang = 0,},
-	    {ang = 90,},
-	 },
-      },
+--      {
+--	 punto = {thetaD = 0, phiD = 0,},
+--	 plano = {ancho = 0.3, alto = 0.3,},
+--	 vects = {
+--	    {ang = 0,},
+--	    {ang = 90,},
+--	 },
+--      },
    },
 }
 
