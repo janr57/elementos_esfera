@@ -1009,7 +1009,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local pln_opac = plano.opac or plnsprops.opac
       local pln_ancho = plano.ancho
       local pln_alto = plano.alto
-      local pln_angD = plano.angD or plnsprops.angD
+      local pln_giro = math.rad(plano.giroD or plnsprops.giroD)
       local pln_dibuja = plano.dibuja or plnsprops.dibuja
 
 --      tex.sprint(
@@ -1022,6 +1022,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local p1x = pto_x
       local p1y = pto_y - pln_ancho/2
       local p1z = pto_z - pln_alto/2
+      -- Giramos el plano el ángulo indicado en giro
+      p1y = p1y * math.cos(pln_giro) - p1z * math.sin(pln_giro)
+      p1z = p1y * math.sin(pln_giro) + p1z * math.cos(pln_giro)
       -- Nuevas coordenadas cartesianas del punto del plano en la posición final
       local x1, y1, z1
       x1, y1, z1 = M.giro_theta_phi(p1x, p1y, p1z, giro_theta, giro_phi)
@@ -1034,6 +1037,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local p2x = pto_x
       local p2y = pto_y + pln_ancho/2
       local p2z = pto_z - pln_alto/2
+      -- Giramos el plano el ángulo indicado en giro
+      p2y = p2y * math.cos(pln_giro) - p2z * math.sin(pln_giro)
+      p2z = p2y * math.sin(pln_giro) + p2z * math.cos(pln_giro)
       -- Nuevas coordenadas cartesianas del punto del plano en la posición final
       local x2, y2, z2
       x2, y2, z2 = M.giro_theta_phi(p2x, p2y, p2z, giro_theta, giro_phi)
@@ -1046,6 +1052,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local p3x = pto_x
       local p3y = pto_y + pln_ancho/2
       local p3z = pto_z + pln_alto/2
+      -- Giramos el plano el ángulo indicado en giro
+      p3y = p3y * math.cos(pln_giro) - p3z * math.sin(pln_giro)
+      p3z = p3y * math.sin(pln_giro) + p3z * math.cos(pln_giro)
       -- Nuevas coordenadas cartesianas del punto del plano en la posición final
       local x3, y3, z3
       x3, y3, z3 = M.giro_theta_phi(p3x, p3y, p3z, giro_theta, giro_phi)
@@ -1057,6 +1066,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local p4x = pto_x
       local p4y = pto_y - pln_ancho/2
       local p4z = pto_z + pln_alto/2
+      -- Giramos el plano el ángulo indicado en giro
+      p4y = p4y * math.cos(pln_giro) - p4z * math.sin(pln_giro)
+      p4z = p4y * math.sin(pln_giro) + p4z * math.cos(pln_giro)
       -- Nuevas coordenadas cartesianas del punto del plano en la posición final
       local x4, y4, z4
       x4, y4, z4 = M.giro_theta_phi(p4x, p4y, p4z, giro_theta, giro_phi)
