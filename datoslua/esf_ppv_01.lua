@@ -74,7 +74,7 @@ return {
    },
    -- Vectores (la dirección y sentido o ángulo se determina para cada vector)
    ppvvectsprops = {
-      color = "black", dibuja = true
+      color = "black", lw = "1pt", dibuja = true
    },
    
    ppvs = {
@@ -84,19 +84,19 @@ return {
 	 plano = {ancho = 2.0, alto = 2.0,},
 	 vects = {
 	    {mod = 0.5, angD = 0,},
-	    {mod = 0.5, angD = 90,},
+--	    {mod = 0.5, angD = 90,},
 	 },
       },
       
       -- 2
-      {
-	 punto = {thetaD = 0, phiD = 0,},
-	 plano = {ancho = 2.0, alto = 2.0, draw="red", fill="red!50"},
-	 vects = {
-	    {mod = 0.5, angD = 0,},
-	    {mod = 0.5, angD = 90,},
-	 },
-      },
+--      {
+--	 punto = {thetaD = 0, phiD = 0,},
+--	 plano = {ancho = 2.0, alto = 2.0, draw="red", fill="red!50"},
+--	 vects = {
+--	    {mod = 0.5, angD = 0,},
+--	    {mod = 0.5, angD = 90,},
+--	 },
+--      },
    },
 }
 

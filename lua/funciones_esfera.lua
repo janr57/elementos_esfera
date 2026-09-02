@@ -172,6 +172,7 @@ function M.dibuja_tikzesfera(transp, esc)
 
    if ppvptosprops and ppvplnsprops and ppvvectsprops and ppvs then
       M.dibuja_planos(plns_vis)
+      --M.dibuja_vectores(vects_vis)
       M.dibuja_puntos(ptos_vis)
    end
 
@@ -959,14 +960,13 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local punto = ppv.punto
       local plano = ppv.plano
       local vects = ppv.vects
-
+      
 --      if index == 1 then
 --	 tex.sprint("\\node at (3,5) {index 1};")
 --      elseif index == 2 then
 --	 tex.sprint("\\node at (3,4.5) {index 2};")
---      end
-      --table.insert(ptos_vis, {})
-
+      --      end
+      
       -- PUNTO
       -- Propiedades tomadas de los datos
       local th = math.rad(punto.thetaD)
@@ -999,6 +999,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       if pto_dibuja and vis then
 	 table.insert(ptos_vis, {pto_color, pto_radio, u, v})
       end
+      -- Guarda las coordenadas en patalla del punto para los vectores
+      local pto_u = u
+      local pto_v = v
 
       -- PLANO
       -- Características tomadas de los datos
@@ -1080,9 +1083,93 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
 			 u1=u1, v1=v1, u2=u2, v2=v2, u3=u3, v3=v3, u4=u4, v4=v4,
 		      }
 	 )
+	 
       end
+
+      -- VECTORES
+      --ppvvectsprops.color
+      -- En cada entrada de punto hay un plano, pero puede haber muchos vectores
+      table.insert(vects_vis, {})
+
+--      tex.sprint("\\node at (3,5) {Llega aquí};")
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,4.5) {vectslen= %.2f};]], #vects
+--      ))
+      
+      for indvect, vect in ipairs(vects) do
+	 local vect_color = vect.color or vectsprops.color
+	 local vect_lw = vect.lw or vectsprops.lw
+	 local vect_dibuja = vect.dibuja or vectsprops.dibuja
+	 local vect_mod = vect.mod
+	 local vect_ang = math.rad(vect.angD)
+	 
+--	 tex.sprint(
+--	    string.format(
+--	       [[\node at (3,4) {(vectcolor,vectdibuja)= (%s, %s)};]],
+--	       vect_color, vect_dibuja
+--	 ))
+--	 if indvect == 1 then
+--	    tex.sprint(
+--	       string.format(
+--		  [[\node at (3,3.5) {(mod,ang)= (%.2f, %.2f)};]],
+--		  vect_mod, vect_ang
+--	    ))
+--	 elseif indvect == 2 then
+--	    tex.sprint(
+--	       string.format(
+--		  [[\node at (3,3) {(mod,ang)= (%.2f, %.2f)};]],
+--		  vect_mod, vect_ang
+--	    ))
+--	 end
+
+	 -- Coordenadas del extremo del vector
+	 local vx, vy, vz
+	 vx = pto_x
+	 vy = pto_y + vect_mod * math.cos(vect_ang)
+	 vz = pto_z + vect_mod * math.sin(vect_ang)
+	 
+--	 tex.sprint(
+--	    string.format(
+--	       [[\node at (3,4) {(vx,vy,vz)= (%.2f, %.2f, %.2f)};]],
+--	       vx, vy, vz
+--	 ))
+
+      -- Nuevas coordenadas cartesianas del vector en la posición final
+      --local x3, y3, z3
+      vx, vy, vz = M.giro_theta_phi(vx, vy, vz, giro_theta, giro_phi)
+
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,3.5) {(vx,vy,vz)= (%.2f, %.2f, %.2f)};]],
+--	    vx, vy, vz
+--      ))
+      
+--      local vu, vv, vvis
+      u, v, vis = M.calcular_punto_y_visibilidad(vx, vy, vz, obs)
+
+--      tex.sprint(
+--	 string.format(
+--	    [[\node at (3,3) {(u,v,vis)= (%.2f, %.2f, %s)};]],
+--	    u, v, vis
+--      ))
+
+      if vect_dibuja and pto_dibuja then
+	 table.insert(vects_vis,
+		      {
+			 color= vect_draw, lw= vect_lw,
+			 ou= pto_u, ov = pto_v,
+			 u= u, v= v,
+		      }
+	 )
+	 
+      end
+      
+      
+      end
+      
    end
-   
+
 --   tex.sprint(
 --      string.format(
 --	 "\\node at (3,4) {ptosvislen= %.2f};", #ptos_vis
