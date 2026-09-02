@@ -81,7 +81,7 @@ return {
       -- 1
       {
 	 punto = {thetaD = 90, phiD = 0,},
-	 plano = {ancho = 1.5, alto = 1.5,},
+	 plano = {ancho = 2.0, alto = 2.0,},
 	 vects = {
 	    {ang = 0,},
 	    {ang = 90,},
@@ -91,7 +91,7 @@ return {
       -- 2
       {
 	 punto = {thetaD = 0, phiD = 0,},
-	 plano = {ancho = 1.5, alto = 1.5,},
+	 plano = {ancho = 2.0, alto = 2.0,},
 	 vects = {
 	    {ang = 0,},
 	    {ang = 90,},

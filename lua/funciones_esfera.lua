@@ -1063,7 +1063,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
       local u4, v4, vis4
       u4, v4, vis4 = M.calcular_punto_y_visibilidad(x4, y4, z4, obs)
-      if pln_dibuja and vis1 and vis2 and vis3 and vis4 then
+      if pln_dibuja and pto_dibuja then
 	 table.insert(plns_vis,
 		      {
 			 draw= pln_draw, fill= pln_fill, opac= pln_opac,
