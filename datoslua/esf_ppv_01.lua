@@ -70,11 +70,11 @@ return {
    },
    -- Planos
    ppvplnsprops = {
-      giroD = 0, draw = "blue", fill = "blue!40", opac = 0.5, dibuja = true,
+      giroD = 0, draw = "blue", fill = "blue!40", opac = 0.75, dibuja = true,
    },
    -- Vectores (la dirección y sentido o ángulo se determina para cada vector)
    ppvvectsprops = {
-      color = "black", mod = 1.0, dibuja = false
+      color = "black", dibuja = true
    },
    
    ppvs = {
@@ -83,8 +83,8 @@ return {
 	 punto = {thetaD = 90, phiD = 0,},
 	 plano = {ancho = 2.0, alto = 2.0,},
 	 vects = {
-	    {ang = 0,},
-	    {ang = 90,},
+	    {mod = 0.5, angD = 0,},
+	    {mod = 0.5, angD = 90,},
 	 },
       },
       
@@ -93,8 +93,8 @@ return {
 	 punto = {thetaD = 0, phiD = 0,},
 	 plano = {ancho = 2.0, alto = 2.0, draw="red", fill="red!50"},
 	 vects = {
-	    {ang = 0,},
-	    {ang = 90,},
+	    {mod = 0.5, angD = 0,},
+	    {mod = 0.5, angD = 90,},
 	 },
       },
    },

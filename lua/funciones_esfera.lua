@@ -30,8 +30,6 @@ function M.dibuja_tikzesfera(transp, esc)
    local ppvvectsprops = esc.ppvvectsprops
    local ppvs = esc.ppvs
    
---   local planos = esc.planos
-
    -- DIBUJO DE ESFERA
    if esf and not smbresf then
       M.dibuja_esfera(esf)
@@ -127,7 +125,7 @@ function M.dibuja_tikzesfera(transp, esc)
    end
 
    -- Puntos, planos y vectores
-   if ppvptosprops and ppvplnsprops and ppvs then
+   if ppvptosprops and ppvplnsprops and ppvvectsprops and ppvs then
       local R = esf.radio
       local tblprops = {ppvptosprops, ppvplnsprops, ppvvectsprops}
       
@@ -172,7 +170,7 @@ function M.dibuja_tikzesfera(transp, esc)
       ptos_vis = nil
    end
 
-   if ppvptosprops and ppvplnsprops and ppvs then
+   if ppvptosprops and ppvplnsprops and ppvvectsprops and ppvs then
       M.dibuja_planos(plns_vis)
       M.dibuja_puntos(ptos_vis)
    end
