@@ -961,64 +961,77 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
 	 table.insert(ptos_vis, {pto_color, pto_radio, u, v})
       end
 
---      -- PLANO
---      -- Características tomadas de los datos
---      local pln_draw = plano.draw or plnsprops.draw
---      local pln_fill = plano.fill or plnsprops.fill
---      local pln_opac = plano.fill or plnsprops.opac
---      local pln_ancho = plano.ancho
---      local pln_alto = plano.alto
---      local pln_angD = plano.angD or plnsprops.angD
---      local pln_dibuja = plano.dibuja or plnsprops.dibuja
---      -- Punto 1 del plano
---      -- Coordenadas cartesianas respecto de la posición en el ecuador
---      -- del primer punto del plano
---      local p1x = pto_x
---      local p1y = pto_y - pln_ancho/2
---      local p1z = pto_z - pln_alto/2
---      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
---      x, y, z = M.giro_theta_phi(p1x, p1y, p1z, giro_theta, giro_phi)
---      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
---      u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      -- PLANO
+      -- Características tomadas de los datos
+      local pln_draw = plano.draw or plnsprops.draw
+      local pln_fill = plano.fill or plnsprops.fill
+      local pln_opac = plano.fill or plnsprops.opac
+      local pln_ancho = plano.ancho
+      local pln_alto = plano.alto
+      local pln_angD = plano.angD or plnsprops.angD
+      local pln_dibuja = plano.dibuja or plnsprops.dibuja
+      -- Punto 1 del plano
+      -- Coordenadas cartesianas respecto de la posición en el ecuador
+      -- del primer punto del plano
+      local p1x = pto_x
+      local p1y = pto_y - pln_ancho/2
+      local p1z = pto_z - pln_alto/2
+      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
+      local x1, y1, z1
+      x1, y1, z1 = M.giro_theta_phi(p1x, p1y, p1z, giro_theta, giro_phi)
+      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
+      local u1, v1, vis1
+      u1, v1, vis1 = M.calcular_punto_y_visibilidad(x, y, z, obs)
 --      if pln_dibuja and vis then
 --	 table.insert(plns_vis, draw=pln_draw, fill=pln_fill, opac=pln_opac, {u, v)}
 --      end
---      -- Punto 2 del plano
---      -- Coordenadas cartesianas respecto de la posición en el ecuador
---      -- del segundo punto del plano
---      local p2x = pto_x
---      local p2y = pto_y + pln_ancho/2
---      local p2z = pto_z - pln_alto/2
---      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
---       x, y, z = M.giro_theta_phi(p2x, p2y, p2z, giro_theta, giro_phi)
---      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
---      u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      -- Punto 2 del plano
+      -- Coordenadas cartesianas respecto de la posición en el ecuador
+      -- del segundo punto del plano
+      local p2x = pto_x
+      local p2y = pto_y + pln_ancho/2
+      local p2z = pto_z - pln_alto/2
+      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
+      local x2, y2, z2
+      x2, y2, z2 = M.giro_theta_phi(p2x, p2y, p2z, giro_theta, giro_phi)
+      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
+      local u2, v2, vis2
+      u2, v2, vis2 = M.calcular_punto_y_visibilidad(x, y, z, obs)
 --      if pln_dibuja and vis then
 --	 table.insert(plns_vis, {u, v)}	 
 --      end
---      -- Punto 3 del plano
---      -- Coordenadas cartesianas respecto de la posición en el ecuador
---      -- del tercer punto del plano
---      local p3x = pto_x
---      local p3y = pto_y + pln_ancho/2
---      local p3z = pto_z + pln_alto/2
---      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
---       x, y, z = M.giro_theta_phi(p3x, p3y, p3z, giro_theta, giro_phi)
---      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
---      u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      -- Punto 3 del plano
+      -- Coordenadas cartesianas respecto de la posición en el ecuador
+      -- del tercer punto del plano
+      local p3x = pto_x
+      local p3y = pto_y + pln_ancho/2
+      local p3z = pto_z + pln_alto/2
+      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
+      local x3, y3, z3
+       x3, y3, z3 = M.giro_theta_phi(p3x, p3y, p3z, giro_theta, giro_phi)
+       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
+       local u3, v3, vis3
+      u3, v3, vis3 = M.calcular_punto_y_visibilidad(x, y, z, obs)
 --      if pln_dibuja and vis then
 --	 table.insert(plns_vis, {u, v})
 --      end
---      local p4x = pto_x
---      local p4y = pto_y - pln_ancho/2
---      local p4z = pto_z + pln_alto/2
---      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
---       x, y, z = M.giro_theta_phi(p4x, p4y, p4z, giro_theta, giro_phi)
---      -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
---      u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
---      if pln_dibuja and vis then
---	 table.insert(plns_vis, {u, v})	 
---      end
+      local p4x = pto_x
+      local p4y = pto_y - pln_ancho/2
+      local p4z = pto_z + pln_alto/2
+      -- Nuevas coordenadas cartesianas del punto del plano en la posición final
+      local x4, y4, z4
+       x4, y4, z4 = M.giro_theta_phi(p4x, p4y, p4z, giro_theta, giro_phi)
+       -- Cálculo de las coordenadas visuales y su visibilidad en la esfera
+       local u4, v4, vis4
+      u4, v4, vis4 = M.calcular_punto_y_visibilidad(x, y, z, obs)
+      if pln_dibuja and vis1 and vis2 and vis3 and vis4 then
+	 table.insert(plns_vis,
+		      {
+			 draw= pln_draw, fill= pln_fill, opac= pln_opac,
+			 u1=u1, v1=v1, u2=u2, v2=v2, u3=u3, v3=v3, u4=u4, v4=v4,
+		      }
+	 )
+      end
    end
 
    tex.sprint(
