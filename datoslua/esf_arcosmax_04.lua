@@ -9,10 +9,11 @@ return {
 
    -- 1. Datos y propiedades de la esfera:
    esfera = {
-      radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,
+      radio = 2.0, loops = 240,
+      draw = "black!25", lw = "0.6pt", fill = "black!8", opac = 1.0,
    },
 
-   smbresfera = {ballcolor="white", opac=0.4},   
+   smbresfera = {ballcolor = "white", opac = 0.4},
 
    
    -- 2, Posición angular del observador
@@ -21,9 +22,8 @@ return {
 
   -- 3. Meridianos
    meridprops = {
-      loops = 120,
-      color_vis = "black!60", lw_vis="0.4pt", estilo_vis = "linea",
-      color_novis = "black!30", lw_novis="0.3pt", estilo_novis = "linea",
+      color_vis = "black!60", lw_vis = "0.4pt", estilo_vis = "linea",
+      color_novis = "black!30", lw_novis = "0.3pt", estilo_novis = "linea",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 
@@ -45,9 +45,8 @@ return {
 
    -- 4. Paralelos
    paralprops = {
-      loops = 240,
-      color_vis = "black!60", lw_vis="0.4pt", estilo_vis = "linea",
-      color_novis = "black!30", lw_novis="0.3pt", estilo_novis = "linea",
+      color_vis = "black!60", lw_vis = "0.4pt", estilo_vis = "linea",
+      color_novis = "black!30", lw_novis = "0.3pt", estilo_novis = "linea",
    },
 
    paralelos = {
@@ -60,19 +59,14 @@ return {
 
    -- 5. Polos
    polprops = {
-      color_vis = "black!70", radio_vis="1pt",
-      color_novis = "black!40", radio_novis="1pt",
-      style_vis = "linea", on_vis = "", off_vis = "",
-      style_novis = "linea", on_novis = "", off_novis = "",
+      color_vis = "black!70", radio_vis = "1pt",
+      color_novis = "black!40", radio_novis = "1pt",
    },
    
    -- Arcos máximos
    arcmaxprops = {
-      loops = 240,
       color_vis = "red", lw_vis = "1.2pt", estilo_vis = "linea",
       color_novis = "yellow!50", lw_novis = "0.8pt", estilo_novis = "linea",
-      style_vis = "linea", on_vis = "", off_vis = "",
-      style_novis = "linea", on_novis = "", off_novis = "",
    },
 
    arcosmax = {

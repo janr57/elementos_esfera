@@ -11,6 +11,7 @@ local M = {}
 -- FUNCIONES BÁSICAS
 -- ----------------------------------------------------------------------------
 function M.dibuja_tikzesfera(transp, esc)
+   local loops = esc.loops
    local esf = esc.esfera
    local smbresf = esc.smbresfera
    local obs = esc.observador
@@ -37,6 +38,7 @@ function M.dibuja_tikzesfera(transp, esc)
    
    if esf and smbresf then
       local R = esf.radio
+      
       M.dibuja_esfera(esf)
       M.dibuja_smbresfera(R, smbresf)
    end
@@ -55,77 +57,91 @@ function M.dibuja_tikzesfera(transp, esc)
    -- -------------------------------------------------------------------------
    -- FASE 1: Creación de tablas, dibujando elementos no visibles
    -- Meridianos
-   if meridprops and meridianos then
-      local R = esf.radio      
-      merid_vis, merid_novis = M.meridianos(transp, R, obs, meridprops, meridianos)
+   if esf and obs and meridprops and meridianos then
+      merid_vis, merid_novis = M.meridianos(transp, esf, obs, meridprops, meridianos)
+      
       -- Dibuja los puntos invisibles si ha lugar:
       if transp then
 	 M.dibuja_curvas(merid_novis)
       end
+      
       merid_novis = nil
    end
 
    -- Polos
-   if polprops and polos then
+   if obs and polprops and polos then
       local R = esf.radio
+      
       pol_vis, pol_novis = M.polos(trandp, R, obs, polprops)
+
+      if transp then
+	 M.dibuja_puntos(polos_novis)
+      end
+
+      polos_novis = nil
    end
    
    -- Paralelos
-   if paralprops and paralelos then
-      local R = esf.radio
-      paral_vis, paral_novis = M.paralelos(transp, R, obs, paralprops, paralelos)
+   if esf and obs and paralprops and paralelos then
+      paral_vis, paral_novis = M.paralelos(transp, esf, obs, paralprops, paralelos)
+      
       -- Dibuja los puntos invisibles si ha lugar:
       if transp then
 	 M.dibuja_curvas(paral_novis)
       end
+      
       paral_novis = nil
    end
 
    -- Polos
-   if polprops then
+   if obs and polprops then
       local R = esf.radio
+      
       polos_vis, polos_novis = M.polos(transp, R, obs, polprops)
+      
       if transp then
 	 M.dibuja_puntos(polos_novis)
       end
+
       polos_novis = nil
    end
 
    -- Arcos de paralelos
-   if arcparprops and arcparals then
-      local R = esf.radio
-
-      arcpar_vis, arcpar_novis = M.arcparals(transp,R,obs,arcparprops, arcparals)
+   if esf and obs and arcparprops and arcparals then
+      arcpar_vis, arcpar_novis = M.arcparals(transp,esf, obs, arcparprops, arcparals)
+      
       if transp then
 	 M.dibuja_curvas(arcpar_novis)
       end
+
       arcpar_novis = nil  
    end
 
    -- Arcos máximos
-   if arcmaxprops and arcosmax then
-      local R = esf.radio
+   if esf and obs and arcmaxprops and arcosmax then
+      arcmax_vis, arcmax_novis = M.arcsmaximos(transp,esf,obs,arcmaxprops,arcosmax)
       
-      arcmax_vis, arcmax_novis = M.arcsmaximos(transp,R,obs,arcmaxprops,arcosmax)
       if transp then
 	 M.dibuja_curvas(arcmax_novis)
-	 arcmax_novis = nil
       end
+      
+      arcmax_novis = nil
    end
 
    -- Puntos
-   if ptosprops and puntos then	 
+   if obs and ptosprops and puntos then	 
       local R = esf.radio
 
       ptos_vis, ptos_novis = M.puntos(transp, R, obs, ptosprops, puntos)
       if transp then
 	 M.dibuja_puntos(ptos_novis)
       end
+
+      ptos_novis = nil
    end
 
    -- Puntos, planos y vectores
-   if ppvptosprops and ppvplnsprops and ppvvectsprops and ppvs then
+   if obs and ppvptosprops and ppvplnsprops and ppvvectsprops and ppvs then
       local R = esf.radio
       local tblprops = {ppvptosprops, ppvplnsprops, ppvvectsprops}
       
@@ -268,23 +284,6 @@ function M.dibuja_vectores(vects)
       u = vector.u
       v = vector.v
 
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,3.5) {(color,lw)= (%s, %s)};]], color, lw
---      ))
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,3) {(length,width)= (%s, %s)};]], arrow_length,arrow_width
---      ))
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,2.5) {(ou,ov)= (%.2f, %.2f)};]], ou, ov
---      ))
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,2) {(u,v)= (%.2f, %.2f)};]], u, v
---      ))
-
       tex.sprint(
 	 string.format(
 	    [[\draw[%s,line width=%s,-{Latex[length=%s,width=%s]}]              (%f,%f) -- (%f,%f);]],
@@ -292,19 +291,6 @@ function M.dibuja_vectores(vects)
       ))
    end
 end
-
---function M.dibuja_curvas(ptos_vis)
---   local v1, v2, v3, v4, v5, v6
---   for ind, curva in ipairs(ptos_vis) do
---      for i, fila in ipairs(curva) do
---	 v1,v2,v3,v4,v5,v6 = fila[1],fila[2],fila[3],fila[4],fila[5],fila[6]
---	 tex.sprint(string.format(
---		       "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
---		       v1, v2, v3, v4, v5, v6
---	 ))
---      end
---   end
---end
 
 function M.dibuja_curvas(ptos_vis)
    local color, lw, estilo, on, off
@@ -323,25 +309,6 @@ function M.dibuja_curvas(ptos_vis)
 	 u = fila.u
 	 v = fila.v
 
---	 if ind == 1 and i == 1 then
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,4.5) {(color,lw)= (%s,%s)};", color, lw
---	    ))
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,4) {(style,on,off)= (%s,%s,%s)};", style,on,off
---	    ))
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,3.5) {(lastu,lastv)= (%.2f, %.2f)};", last_u, last_v
---	    ))
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,3) {(u,v)= (%.2f, %.2f)};", u, v
---	    ))
---	 end
-	 
 	 if estilo == "linea" then
 	    tex.sprint(string.format(
 			  "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
@@ -353,10 +320,6 @@ function M.dibuja_curvas(ptos_vis)
       end
    end
 end
-
---color= color_vis, lw = lw_vis,
---style = style_vis, on = on_vis, off = off_vis,
---last_u = last_u, last_v = last_v, u = u, v = v
 
 function M.dibuja_esfera(esf)
    local R = esf.radio
@@ -398,10 +361,11 @@ function M.dibuja_smbresfera(R, smbresf)
 end
 
 -- ----------------------------------------------------------------------------
-function M.meridianos(transp, R, obs, meridprops, meridianos)
+function M.meridianos(transp, esf, obs, meridprops, meridianos)
    local ptos_vis = {}
    local ptos_novis = {}
-   
+
+   local R = esf.radio
    -- Como son meridianos:
    -- "Polo Norte"
    local th1 = math.rad(0)
@@ -449,7 +413,7 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
       table.insert(ptos_novis, {})
 
       ph = math.rad(meridiano.phiD)
-      loops = meridprops.loops
+      loops = meridprops.loops or esf.loops
       color_vis = meridiano.color_vis or meridprops.color_vis
       lw_vis = meridiano.lw_vis or meridprops.lw_vis
       estilo_vis = meridiano.estilo_vis or meridprops.estilo_vis
@@ -484,7 +448,9 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
 
       -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
       -- tramo por tramo
-      local pasos = loops
+      -- Los meridianos tienen longitud pi * R
+      -- pasos -> loops * len /(2 pi R) = loops * pi * R /(2 pi R) = loops / 2
+      local pasos = loops / 2
       local last_u, last_v, last_vis
 
       for i = 0, pasos do
@@ -527,10 +493,12 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
 end
 
 -- ----------------------------------------------------------------------------
-function M.paralelos(transp, R, obs, paralprops, paralelos)
+function M.paralelos(transp, esf, obs, paralprops, paralelos)
    local ptos_vis = {}
    local ptos_novis = {}
 
+   local R = esf.radio
+   
    for index, paralelo in ipairs(paralelos) do
       local th = math.rad(paralelo.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis
@@ -543,7 +511,7 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
 
-      loops = paralprops.loops
+      loops = paralprops.loops or esf.loops
       color_vis = paralelo.color_vis or paralprops.color_vis
       lw_vis = paralelo.lw_vis or paralprops.lw_vis
       estilo_vis = paralelo.estilo_vis or paralprops.estilo_vis
@@ -569,17 +537,6 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
 	 
 	 local u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
 
---	 if i == 1 then
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,3) {(lastu,lastv)= (%.2f, %.2f)};", last_u, last_v
---	    ))
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,2.5) {(u,v)= (%.2f, %.2f)};", u, v
---	    ))
---	 end
-	 
 	 if i > 0 then
 	    if vis and last_vis then
 	       table.insert(
@@ -695,9 +652,11 @@ function M.puntos(transp, R, obs, ptosprops, puntos)
 end
 
 -- ----------------------------------------------------------------------------
-function M.arcparals(transp, R, obs, arcparprops, arcparals)
+function M.arcparals(transp, esf, obs, arcparprops, arcparals)
    local ptos_vis = {}
    local ptos_novis = {}
+
+   local R = esf.radio
    
    for index, arcparal in ipairs(arcparals) do
       local th = math.rad(arcparal.thetaD)
@@ -710,7 +669,7 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
 
-      loops = arcparprops.loops
+      loops = arcparprops.loops or esf.loops
       color_vis = arcparal.color_vis or arcparprops.color_vis
       lw_vis = arcparal.lw_vis or arcparprops.lw_vis
       estilo_vis = arcparal.estilo_vis or arcparprops.estilo_vis
@@ -724,14 +683,13 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
       local ph1 = math.rad(arcparal.phi1D)
       local ph2 = math.rad(arcparal.phi2D)
 
-      -- Adapta el número de puntos según la longitud de cada segmento
+      -- Adapta el número de puntos según la longitud de cada arco de paralelo
       local pasos = math.ceil(math.abs(ph2-ph1) * loops * math.sin(th)/(2*math.pi))
       local last_u, last_v, last_vis
       
       for i = 0, pasos do
 	 -- Variamos ph de ph1 a ph2 radianes
 	 local ph = ph1 + i * (ph2-ph1)/pasos
-	 
 	 
 	 -- Coordenadas 3D del punto paralelo
 	 local x = R * sth * math.cos(ph)
@@ -774,9 +732,11 @@ end
 -- Info:
 -- Punto antipodal de (theta1, phi1) es (theta2=180-theta1, phi2=(phi1+180)/(2pi)
 --
-function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
+function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
    local ptos_vis = {}
    local ptos_novis = {}
+
+   local R = esf.radio
    
    for index, arcmax in ipairs(arcosmax) do
       local loops, dist, distmin, distmax, giro
@@ -796,7 +756,7 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       table.insert(ptos_vis, {})
       table.insert(ptos_novis, {})
 
-      loops = arcmaxprops.loops
+      loops = arcmaxprops.loops or esf.loops
       color_vis = arcmax.color_vis or arcmaxprops.color_vis
       lw_vis = arcmax.lw_vis or arcmaxprops.lw_vis
       estilo_vis = arcmax.estilo_vis or arcmaxprops.estilo_vis
@@ -938,16 +898,6 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       wx = vec_w[1]
       wy = vec_w[2]
       wz = vec_w[3]
-      
---      if delta_phi > math.pi and giro == "M" then
---	 signo_bucle = -1
---      elseif delta_phi > math.pi and giro == "m" then
---	 signo_bucle= 1
---      elseif delta_phi < math.pi and giro == "M" then
---	 signo_bucle = -1
---      elseif delta_phi < math.pi and giro == "m" then
---	 signo_bucle = 1
---      end
       
       -- Adapta el número de puntos según la longitud de cada segmento
       pasos = math.ceil(loops * dist /(2 * math.pi * R))

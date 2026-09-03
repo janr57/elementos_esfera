@@ -3,7 +3,8 @@
 return {
    -- 1. Datos y propiedades de la esfera:
    esfera = {
-      radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,
+      radio = 2.0, loops = 240,
+      draw = "black!25", lw = "0.6pt", fill = "black!8", opac = 1.0,
    },
 
    -- 2, Posición angular del observador
@@ -11,9 +12,9 @@ return {
    
    -- 3. Meridianos
    meridprops = {
-      loops = 120,
-      color_vis = "black!60", lw_vis="0.8pt", estilo_vis = "linea",
-      color_novis = "black!40", lw_novis="0.4pt", estilo_novis = "linea",
+--      loops = 120,
+      color_vis = "black!60", lw_vis = "0.8pt", estilo_vis = "linea",
+      color_novis = "black!40", lw_novis = "0.4pt", estilo_novis = "linea",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 
