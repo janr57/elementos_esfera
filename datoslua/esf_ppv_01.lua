@@ -21,10 +21,9 @@ return {
 
   -- 3. Meridianos
    meridprops = {
-      loops = 120, color_vis = "black!60", lw_vis="0.4pt",
-      color_novis = "black!30", lw_novis="0.3pt",
-      style_vis = "linea", on_vis = "", off_vis = "",
-      style_novis = "linea", on_novis = "", off_novis = "",
+      loops = 120,
+      color_vis = "black!60", lw_vis="0.4pt", estilo_vis = "linea",
+      color_novis = "black!30", lw_novis="0.3pt", estilo_novis = "linea",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 
@@ -46,10 +45,9 @@ return {
 
    -- 4. Paralelos
    paralprops = {
-      loops = 240, color_vis = "black!60", lw_vis="0.4pt",
-      color_novis = "black!30", lw_novis="0.3pt",
-      style_vis = "linea", on_vis = "", off_vis = "",
-      style_novis = "linea", on_novis = "", off_novis = "",
+      loops = 240,
+      color_vis = "black!60", lw_vis="0.4pt", estilo_vis = "linea",
+      color_novis = "black!30", lw_novis="0.3pt", estilo_novis = "linea",
    },
 
    paralelos = {

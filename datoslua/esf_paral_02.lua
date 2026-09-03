@@ -13,11 +13,9 @@ return {
    
    -- 3. Paralelos
    paralprops = {
-      loops = 120, color_vis = "black!60", lw_vis="0.8pt",
-      color_novis = "black!40", lw_novis="0.4pt",
-      style_vis = "linea", on_vis = "", off_vis = "",
-      style_novis = "linea", on_novis = "", off_novis = "",      
-
+      loops = 120,
+      color_vis = "black!60", lw_vis="0.8pt", estilo_vis = "linea",
+      color_novis = "black!40", lw_novis="0.4pt", estilo_novis = "linea",
    },
    
    -- 4. Paralelos

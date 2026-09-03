@@ -13,8 +13,9 @@ return {
    
    -- 3. Meridianos
    meridprops = {
-      loops = 120, color_vis = "black!80", lw_vis="0.6pt",
-      color_novis = "black!40", lw_novis="0.5pt",
+      loops = 120,
+      color_vis = "black!80", lw_vis="0.6pt", estilo_vis = "linea",
+      color_novis = "black!40", lw_novis="0.5pt", estilo_novis = "linea",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 

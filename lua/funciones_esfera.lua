@@ -196,6 +196,25 @@ function M.separar_dimension(dim)
    end
 end
 
+
+function M.procesar_estilo(str)
+   local estilo, d1, d2
+   
+   estilo, d1, d2 = str:match("^%s*(.-)%((%d+)pt%s*,%s*(%d+)pt%)%s*$")
+
+   if estilo and d1 and d2 then
+      return estilo, tonumber(d1), tonumber(d2)
+   end
+
+   return str:match("^%s*(.-)%s*$"), 0, 0
+end
+
+function M.tablelength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
+end
+
 -- ----------------------------------------------------------------------------
 -- FUNCIONES AUXILIARES
 -- ----------------------------------------------------------------------------
@@ -288,16 +307,15 @@ end
 --end
 
 function M.dibuja_curvas(ptos_vis)
-   local color, lw, style, on, off
+   local color, lw, estilo, on, off
    local last_u, last_v
    local u, v
    
    for ind, curva in ipairs(ptos_vis) do
       for i, fila in ipairs(curva) do
-	 --v1,v2,vi3,v4,v5,v6 = fila[1],fila[2],fila[3],fila[4],fila[5],fila[6]
 	 color = fila.color
 	 lw = fila.lw
-	 style = fila.style
+	 estilo = fila.estilo
 	 on = fila.on
 	 off = fila.off
 	 last_u = fila.last_u
@@ -324,11 +342,13 @@ function M.dibuja_curvas(ptos_vis)
 --	    ))
 --	 end
 	 
-	 if style == "linea" then
+	 if estilo == "linea" then
 	    tex.sprint(string.format(
 			  "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
 			  color, lw, last_u, last_v, u, v
 	    ))
+	 elseif style == "dashed" then
+	 elseif style == "dotted" then
 	 end
       end
    end
@@ -421,8 +441,8 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
    for index, meridiano in ipairs(meridianos) do
       local ph
       local loops, color_vis, lw_vis, color_novis, lw_novis
-      local style_vis, on_vis, off_vis
-      local style_novis, on_novis, off_novis
+      local estilo_vis, on_vis, off_vis
+      local estilo_novis, on_novis, off_novis
       local ux,uy,uz,vx,vy,vz
 
       table.insert(ptos_vis, {})
@@ -432,14 +452,13 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
       loops = meridprops.loops
       color_vis = meridiano.color_vis or meridprops.color_vis
       lw_vis = meridiano.lw_vis or meridprops.lw_vis
+      estilo_vis = meridiano.estilo_vis or meridprops.estilo_vis
       color_novis = meridiano.color_novis or meridprops.color_novis
       lw_novis = meridiano.lw_novis or meridprops.lw_novis
-      style_vis = meridiano.style_vis or meridprops.style_vis
-      on_vis = meridiano.on_vis or meridprops.on_vis
-      off_vis = meridiano.off_vis or meridprops.off_vis
-      style_novis = meridiano.style_novis or meridprops.style_novis
-      on_novis = meridiano.on_novis or meridprops.on_novis
-      off_novis = meridiano.off_novis or meridprops.off_novis
+      estilo_novis = meridiano.estilo_novis or meridprops.estilo_novis
+
+      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
       
       local ux, uy, uz
       if math.abs(omega - math.pi) < 1e-5 then
@@ -485,7 +504,7 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
 		  ptos_vis[index],
 		  {
 		     color = color_vis, lw = lw_vis,
-		     style = style_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -494,7 +513,7 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
 		  ptos_novis[index],
 		  {
 		     color = color_novis, lw = lw_novis,
-		     style = style_novis, on = on_novis, off = off_novis,
+		     estilo = estilo_novis, on = on_novis, off = off_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -507,12 +526,6 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
    return ptos_vis, ptos_novis
 end
 
-function tablelength(T)
-  local count = 0
-  for _ in pairs(T) do count = count + 1 end
-  return count
-end
-
 -- ----------------------------------------------------------------------------
 function M.paralelos(transp, R, obs, paralprops, paralelos)
    local ptos_vis = {}
@@ -521,8 +534,8 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
    for index, paralelo in ipairs(paralelos) do
       local th = math.rad(paralelo.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis
-      local style_vis, on_vis, off_vis
-      local style_novis, on_novis, off_novis
+      local estilo_vis, on_vis, off_vis
+      local estilo_novis, on_novis, off_novis
       
       local sth = math.sin(th)
       local cth = math.cos(th)
@@ -533,14 +546,13 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
       loops = paralprops.loops
       color_vis = paralelo.color_vis or paralprops.color_vis
       lw_vis = paralelo.lw_vis or paralprops.lw_vis
-      style_vis = paralelo.style_vis or paralprops.style_vis
-      on_vis = paralelo.on_vis or paralprops.on_vis
-      off_vis = paralelo.off_vis or paralprops.off_vis
+      estilo_vis = paralelo.estilo_vis or paralprops.estilo_vis
       color_novis = paralelo.color_novis or paralprops.color_novis
       lw_novis = paralelo.lw_novis or paralprops.lw_novis
-      style_novis = paralelo.style_novis or paralprops.style_novis
-      on_novis = paralelo.on_novis or paralprops.on_novis
-      off_novis = paralelo.off_novis or paralprops.off_novis
+      estilo_novis = paralelo.estilo_novis or paralprops.estilo_novis
+
+      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
 
       -- Adapta el número de puntos según la longitud de cada paralelo
       local pasos = math.ceil(loops * math.sin(th))
@@ -574,7 +586,7 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
 		  ptos_vis[index],
 		  {
 		     color = color_vis, lw = lw_vis,
-		     style = style_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -583,7 +595,7 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
 		  ptos_novis[index],
 		  {
 		     color = color_novis, lw = lw_novis,
-		     style = style_novis, on = on_novis, off = off_novis,
+		     estilo = estilo_novis, on = on_novis, off = off_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -690,8 +702,8 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
    for index, arcparal in ipairs(arcparals) do
       local th = math.rad(arcparal.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis
-      local style_vis, on_vis, off_vis
-      local style_novis, on_novis, off_novis
+      local estilo_vis, on_vis, off_vis
+      local estilo_novis, on_novis, off_novis
       local sth = math.sin(th)
       local cth = math.cos(th)
 
@@ -701,14 +713,13 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
       loops = arcparprops.loops
       color_vis = arcparal.color_vis or arcparprops.color_vis
       lw_vis = arcparal.lw_vis or arcparprops.lw_vis
-      style_vis = arcparal.style_vis or arcparprops.style_vis
-      on_vis = arcparal.on_vis or arcparprops.on_vis
-      off_vis = arcparal.off_vis or arcparprops.off_vis
+      estilo_vis = arcparal.estilo_vis or arcparprops.estilo_vis
       color_novis = arcparal.color_novis or arcparprops.color_novis
       lw_novis = arcparal.lw_novis or arcparprops.lw_novis
-      style_novis = arcparal.style_novis or arcparprops.style_novis
-      on_novis = arcparal.on_novis or arcparprops.on_novis
-      off_novis = arcparal.off_novis or arcparprops.off_novis
+      estilo_novis = arcparal.estilo_vis or arcparprops.estilo_novis
+
+      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
       
       local ph1 = math.rad(arcparal.phi1D)
       local ph2 = math.rad(arcparal.phi2D)
@@ -734,8 +745,8 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
 	       table.insert(
 		  ptos_vis[index],
 		  {
-		     color= color_vis, lw = lw_vis,
-		     style = style_vis, on = on_vis, off = off_vis,
+		     color = color_vis, lw = lw_vis,
+		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -744,7 +755,7 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
 		  ptos_novis[index],
 		  {
 		     color = color_novis, lw = lw_novis,
-		     style =style_novis, on = on_novis, off = off_novis,
+		     estilo = estilo_novis, on = on_novis, off = off_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -759,122 +770,6 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
    return ptos_vis, ptos_novis
 end
 
-
--- ----------------------------------------------------------------------------
---function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
---   local ptos_vis = {}
---   local ptos_novis = {}
---
---
---   for index, arcmax in ipairs(arcosmax) do
---      local th1, ph1, th2, ph2, ph
---      local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
---      local x1, y1, z1, x2, y2, z2
---      local ux,uy,uz,vx,vy,vz
---
---      table.insert(ptos_vis, {})
---      table.insert(ptos_novis, {})
---      
---      loops = arcmaxprops.loops
---      color_vis = arcmax.color_vis or arcmaxprops.color_vis
---      lw_vis = arcmax.lw_vis or arcmaxprops.lw_vis
---      color_novis = arcmax.color_novis or arcmaxprops.color_novis
---      lw_novis = arcmax.lw_novis or arcmaxprops.lw_novis
---
---      th1 = math.rad(arcmax.theta1D)
---      ph1 = math.rad(arcmax.phi1D)
---      th2 = math.rad(arcmax.theta2D)
---      ph2 = math.rad(arcmax.phi2D)
---      ph = math.rad(arcmax.phiD)
---      
---      sth1 = math.sin(th1)
---      cth1 = math.cos(th1)
---      sph1 = math.sin(ph1)
---      cph1 = math.cos(ph1)
---      
---      sth2 = math.sin(th2)
---      cth2 = math.cos(th2)
---      sph2 = math.sin(ph2)
---      cph2 = math.cos(ph2)
---
---      cph1ph2 = math.cos(ph1-ph2)
---      
---      -- Coordenadas cartesianas de los puntos
---      x1 = R * sth1 * cph1
---      y1 = R * sth1 * sph1
---      z1 = R * cth1
---      
---      x2 = R * sth2 * cph2
---      y2 = R * sth2 * sph2
---      z2 = R * cth2
---      
---      local dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
---      if dot > 1 then dot = 1
---      elseif dot < -1 then dot = -1
---      end
---      
---      local omega = math.acos(dot)
---	 
---      local ux, uy, uz
---      if math.abs(omega - math.pi) < 1e-5 then
---	 local th_orto = th1 + math.pi/2
---	 ux = math.sin(th_orto) * math.cos(ph)
---	 uy = math.sin(th_orto) * math.sin(ph)
---	 uz = math.cos(th_orto)
---	 
---	 local dot_check = (x1*ux + y1*uy + z1*uz) / R
---	 ux = ux - dot_check * (x1/R)
---	 uy = uy - dot_check * (y1/R)
---	 uz = uz - dot_check * (z1/R)
---	 
---	 local norm_check = math.sqrt(ux*ux + uy*uy + uz*uz)
---	 ux, uy, uz = ux/norm_check, uy/norm_check, uz/norm_check
---      else
---	 local vx = x2 - dot * x1
---	 local vy = y2 - dot * y1
---	 local vz = z2 - dot * z1
---	 local norm = math.sqrt(vx*vx + vy*vy + vz*vz)
---	 ux, uy, uz = vx / norm, vy / norm, vz / norm
---      end
---
---      -- Adapta el número de puntos según la longitud de cada segmento
---      local dist
---      dist = R * math.acos(cth1 * cth2 + sth1 * sth2 * cph1ph2)
---      local pasos = math.ceil(loops * dist /(2 * math.pi * R))
---      local last_u, last_v, last_vis
---      
---      -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
---      -- tramo por tramo
---      local last_u, last_v, last_vis
---
---      for i = 0, pasos do
---	 local t = i / pasos
---	 local current_angle = t * omega
---	 
---	 local cx = math.cos(current_angle)*x1 + math.sin(current_angle)*(ux*R)
---	 local cy = math.cos(current_angle)*y1 + math.sin(current_angle)*(uy*R)
---	 local cz = math.cos(current_angle)*z1 + math.sin(current_angle)*(uz*R)
---	 
---	 local u,v,vis = M.calcular_punto_y_visibilidad(cx, cy, cz, obs)
---
---	 if i > 0 then
---	    if vis and last_vis then
---	       table.insert(ptos_vis[index],
---			    {color_vis,lw_vis,last_u,last_v,u,v})
---	    elseif transp then
---	       table.insert(ptos_novis[index],
---			    {color_novis, lw_novis, last_u, last_v, u, v})
---	    end -- if vis and last_vis
---	 end -- if i > 0
---	 
---	 last_u, last_v, last_vis = u, v, vis
---	 
---      end -- for 0, pasos	 
---   end -- (for index, arcmax)
---
---      return ptos_vis, ptos_novis
---end
-
 -- ----------------------------------------------------------------------------
 -- Info:
 -- Punto antipodal de (theta1, phi1) es (theta2=180-theta1, phi2=(phi1+180)/(2pi)
@@ -885,14 +780,13 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
    
    for index, arcmax in ipairs(arcosmax) do
       local loops, dist, distmin, distmax, giro
-      local style_vis, on_vis, off_vis
-      local style_novis, on_novis, off_novis
+      local estilo_vis, on_vis, off_vis
+      local estilo_novis, on_novis, off_novis
       local th1D, th2D, ph1D, ph2D
       local th1, ph1, th2, ph2, th3, ph3
       local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
       local x1, y1, z1, x2, y2, z2, x3, y3, z3
       local ux, uy, uz, vx, vy, vz, wx, wy, wz
-      --local vec_u, vec_v, vec_w
       local nx, ny, nz, nmod
       local xp, yp, zp
       local delta_phi, omega, omegamin, omegamax, signo_bucle
@@ -905,14 +799,13 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       loops = arcmaxprops.loops
       color_vis = arcmax.color_vis or arcmaxprops.color_vis
       lw_vis = arcmax.lw_vis or arcmaxprops.lw_vis
-      style_vis = arcmax.style_vis or arcmaxprops.style_vis
-      on_vis = arcmax.on_vis or arcmaxprops.on_vis
-      off_vis = arcmax.off_vis or arcmaxprops.off_vis
+      estilo_vis = arcmax.estilo_vis or arcmaxprops.estilo_vis
       color_novis = arcmax.color_novis or arcmaxprops.color_novis
       lw_novis = arcmax.lw_novis or arcmaxprops.lw_novis
-      style_novis = arcmax.style_novis or arcmaxprops.style_novis
-      on_novis = arcmax.on_novis or arcmaxprops.on_novis
-      off_novis = arcmax.off_novis or arcmaxprops.off_novis
+      estilo_novis = arcmax.estilo_novis or arcmaxprops.estilo_novis
+
+      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
 
       th1 = math.rad(arcmax.theta1D)
       ph1 = math.rad(arcmax.phi1D)
@@ -1088,7 +981,7 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 		  ptos_vis[index],
 		  {
 		     color = color_vis, lw = lw_vis,
-		     style = style_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -1097,7 +990,7 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 		  ptos_novis[index],
 		  {
 		     color = color_novis, lw = lw_novis,
-		     style = style_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
