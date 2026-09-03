@@ -15,6 +15,7 @@ return {
    paralprops = {
       loops = 120, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
+      
    },
 
    -- 4. Paralelos

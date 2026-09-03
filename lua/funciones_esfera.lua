@@ -179,7 +179,22 @@ function M.dibuja_tikzesfera(transp, esc)
 end
 
 -- ----------------------------------------------------------------------------
+-- USO:
+--      local dim = "1.2pt"
+--      local valor, unidad = M.separar_dimension(dim)
+--
+function M.separar_dimension(dim)
+   -- Busca el número (incluyendo opcionalmente signo y decimales) y la unidad
+   local valor, unidad
 
+   valor, unidad = string.match(dim, "^%s*([%-+]?%d*%.?%d+)%s*(%a*)%s*$")
+
+   if valor then
+      return tonumber(valor), unidad
+   else
+      return nil, "Formato no válido"
+   end
+end
 
 -- ----------------------------------------------------------------------------
 -- FUNCIONES AUXILIARES
