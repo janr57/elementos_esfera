@@ -238,12 +238,7 @@ end
 function M.dibuja_vectores(vects)
    local color, lw, arrow
    local ou, ov, u, v
-   
-   tex.sprint(
-      string.format(
-	 [[\node at (3,4) {vectslen= %.2f};]], #vects
-   ))
-      
+         
    for i, vector in ipairs(vects) do
       color = vector.color
       lw = vector.lw
