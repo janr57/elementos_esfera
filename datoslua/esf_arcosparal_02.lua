@@ -11,12 +11,14 @@ return {
    -- 2, Posición angular del observador
    observador = {thetaD = 65, phiD = 15},
    
-   -- 3. Meridianos
+   -- 3. Paralelos
    paralprops = {
-      loops = 120, color_vis = "black!60", lw_vis="0.4pt",
-      color_novis = "black!30", lw_novis="0.3pt",
+      loops = 120, color_vis = "black!60", lw_vis="0.8pt",
+      color_novis = "black!40", lw_novis="0.4pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "", 
    },
-
+   
    -- 4. Paralelos
    paralelos = {
       {thetaD = 30},
@@ -28,20 +30,22 @@ return {
 
    -- 5. Polos
    polprops = {
-      color_vis = "black!70", radio_vis="1pt",
-      color_novis = "black!40", radio_novis="1pt",
+      color_vis = "black!70", radio_vis = "1pt",
+      color_novis = "black!40", radio_novis = "1pt",
    },
 
-   -- 6. Arcos de paralelos
+   -- 6. Arcos de paalelos
    arcparprops = {
       loops = 240,
-      color_vis = "red", lw_vis = "1.2pt",
-      color_novis = "orange", lw_novis = "1pt",
+      color_vis = "red", lw_vis="1.2pt",
+      color_novis = "orange", lw_novis="0.8pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis="linea", on_novis="", off_novis="",
    },
 
    arcparals = {
       {thetaD = 60, phi1D = 45, phi2D = 200,},
-      {thetaD = 90, phi1D = 0, phi2D = 60,},
+      {thetaD = 90, phi1D = 0, phi2D = 180,},
       {thetaD = 120, phi1D = -160, phi2D = 40,},
    }
    

@@ -11,13 +11,15 @@ return {
    -- 2, Posición angular del observador
    observador = {thetaD = 65, phiD = 15},
    
-   -- 3. Meridianos
+   -- 3. Paralelos
    paralprops = {
-      loops = 120, color_vis = "black!60", lw_vis="0.4pt",
-      color_novis = "black!30", lw_novis="0.3pt",
-      
-   },
+      loops = 120, color_vis = "black!60", lw_vis="0.8pt",
+      color_novis = "black!40", lw_novis="0.4pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",      
 
+   },
+   
    -- 4. Paralelos
    paralelos = {
       {thetaD = 30},

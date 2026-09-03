@@ -23,6 +23,8 @@ return {
    meridprops = {
       loops = 120, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 
@@ -46,6 +48,8 @@ return {
    paralprops = {
       loops = 240, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",
    },
 
    paralelos = {
@@ -77,10 +81,6 @@ return {
       color = "black", lw = "0.66pt", arrow_length="4pt", arrow_width="3pt",
       dibuja = true
    },
---   ppvvectsprops = {
---      color = "black", lw = "0.66pt", arrow = "-{Latex[length=4.5pt,width=3pt]}",
---      dibuja = true
---   },
    
    ppvs = {
       -- 1

@@ -143,7 +143,7 @@ function M.dibuja_tikzesfera(transp, esc)
    if paralprops and paralelos then
       M.dibuja_curvas(paral_vis)
       
-      merid_vis = nil
+      paral_vis = nil
    end
    
    if polprops then
@@ -278,20 +278,70 @@ function M.dibuja_vectores(vects)
       ))
    end
 end
--- "-{Latex[length=4.5pt,width=3pt]}"
+
+--function M.dibuja_curvas(ptos_vis)
+--   local v1, v2, v3, v4, v5, v6
+--   for ind, curva in ipairs(ptos_vis) do
+--      for i, fila in ipairs(curva) do
+--	 v1,v2,v3,v4,v5,v6 = fila[1],fila[2],fila[3],fila[4],fila[5],fila[6]
+--	 tex.sprint(string.format(
+--		       "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
+--		       v1, v2, v3, v4, v5, v6
+--	 ))
+--      end
+--   end
+--end
 
 function M.dibuja_curvas(ptos_vis)
-   local v1, v2, v3, v4, v5, v6
+   local color, lw, style, on, off
+   local last_u, last_v
+   local u, v
+   
    for ind, curva in ipairs(ptos_vis) do
       for i, fila in ipairs(curva) do
-	 v1,v2,v3,v4,v5,v6 = fila[1],fila[2],fila[3],fila[4],fila[5],fila[6]
-	 tex.sprint(string.format(
-		       "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
-		       v1, v2, v3, v4, v5, v6
-	 ))
+	 --v1,v2,vi3,v4,v5,v6 = fila[1],fila[2],fila[3],fila[4],fila[5],fila[6]
+	 color = fila.color
+	 lw = fila.lw
+	 style = fila.style
+	 on = fila.on
+	 off = fila.off
+	 last_u = fila.last_u
+	 last_v = fila.last_v
+	 u = fila.u
+	 v = fila.v
+
+--	 if ind == 1 and i == 1 then
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,4.5) {(color,lw)= (%s,%s)};", color, lw
+--	    ))
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,4) {(style,on,off)= (%s,%s,%s)};", style,on,off
+--	    ))
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,3.5) {(lastu,lastv)= (%.2f, %.2f)};", last_u, last_v
+--	    ))
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,3) {(u,v)= (%.2f, %.2f)};", u, v
+--	    ))
+--	 end
+	 
+	 if style == "linea" then
+	    tex.sprint(string.format(
+			  "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
+			  color, lw, last_u, last_v, u, v
+	    ))
+	 end
       end
    end
 end
+
+--color= color_vis, lw = lw_vis,
+--style = style_vis, on = on_vis, off = off_vis,
+--last_u = last_u, last_v = last_v, u = u, v = v
 
 function M.dibuja_esfera(esf)
    local R = esf.radio
@@ -376,6 +426,8 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
    for index, meridiano in ipairs(meridianos) do
       local ph
       local loops, color_vis, lw_vis, color_novis, lw_novis
+      local style_vis, on_vis, off_vis
+      local style_novis, on_novis, off_novis
       local ux,uy,uz,vx,vy,vz
 
       table.insert(ptos_vis, {})
@@ -387,6 +439,12 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
       lw_vis = meridiano.lw_vis or meridprops.lw_vis
       color_novis = meridiano.color_novis or meridprops.color_novis
       lw_novis = meridiano.lw_novis or meridprops.lw_novis
+      style_vis = meridiano.style_vis or meridprops.style_vis
+      on_vis = meridiano.on_vis or meridprops.on_vis
+      off_vis = meridiano.off_vis or meridprops.off_vis
+      style_novis = meridiano.style_novis or meridprops.style_novis
+      on_novis = meridiano.on_novis or meridprops.on_novis
+      off_novis = meridiano.off_novis or meridprops.off_novis
       
       local ux, uy, uz
       if math.abs(omega - math.pi) < 1e-5 then
@@ -428,10 +486,23 @@ function M.meridianos(transp, R, obs, meridprops, meridianos)
 	 -- Solo será visible el segmento si AMBOS extremos del tramo son visibles
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(ptos_vis[index], {color_vis,lw_vis,last_u,last_v,u,v})
+	       table.insert(
+		  ptos_vis[index],
+		  {
+		     color = color_vis, lw = lw_vis,
+		     style = style_vis, on = on_vis, off = off_vis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    elseif transp then
-	       table.insert(ptos_novis[index],
-			    {color_novis, lw_novis, last_u, last_v, u, v})
+	       table.insert(
+		  ptos_novis[index],
+		  {
+		     color = color_novis, lw = lw_novis,
+		     style = style_novis, on = on_novis, off = off_novis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    end
 	 end
 	 last_u, last_v, last_vis = u, v, vis
@@ -455,6 +526,9 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
    for index, paralelo in ipairs(paralelos) do
       local th = math.rad(paralelo.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis
+      local style_vis, on_vis, off_vis
+      local style_novis, on_novis, off_novis
+      
       local sth = math.sin(th)
       local cth = math.cos(th)
 
@@ -464,8 +538,14 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
       loops = paralprops.loops
       color_vis = paralelo.color_vis or paralprops.color_vis
       lw_vis = paralelo.lw_vis or paralprops.lw_vis
+      style_vis = paralelo.style_vis or paralprops.style_vis
+      on_vis = paralelo.on_vis or paralprops.on_vis
+      off_vis = paralelo.off_vis or paralprops.off_vis
       color_novis = paralelo.color_novis or paralprops.color_novis
       lw_novis = paralelo.lw_novis or paralprops.lw_novis
+      style_novis = paralelo.style_novis or paralprops.style_novis
+      on_novis = paralelo.on_novis or paralprops.on_novis
+      off_novis = paralelo.off_novis or paralprops.off_novis
 
       -- Adapta el número de puntos según la longitud de cada paralelo
       local pasos = math.ceil(loops * math.sin(th))
@@ -482,12 +562,36 @@ function M.paralelos(transp, R, obs, paralprops, paralelos)
 	 
 	 local u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
 
+--	 if i == 1 then
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,3) {(lastu,lastv)= (%.2f, %.2f)};", last_u, last_v
+--	    ))
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,2.5) {(u,v)= (%.2f, %.2f)};", u, v
+--	    ))
+--	 end
+	 
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(ptos_vis[index], {color_vis,lw_vis,last_u,last_v,u,v})
+	       table.insert(
+		  ptos_vis[index],
+		  {
+		     color = color_vis, lw = lw_vis,
+		     style = style_vis, on = on_vis, off = off_vis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    elseif transp then
-	       table.insert(ptos_novis[index],
-			    {color_novis, lw_novis, last_u, last_v, u, v})
+	       table.insert(
+		  ptos_novis[index],
+		  {
+		     color = color_novis, lw = lw_novis,
+		     style = style_novis, on = on_novis, off = off_novis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    end -- if vis and last_vis
 	 end -- if i > 0
 	 
@@ -591,6 +695,8 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
    for index, arcparal in ipairs(arcparals) do
       local th = math.rad(arcparal.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis
+      local style_vis, on_vis, off_vis
+      local style_novis, on_novis, off_novis
       local sth = math.sin(th)
       local cth = math.cos(th)
 
@@ -600,8 +706,15 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
       loops = arcparprops.loops
       color_vis = arcparal.color_vis or arcparprops.color_vis
       lw_vis = arcparal.lw_vis or arcparprops.lw_vis
+      style_vis = arcparal.style_vis or arcparprops.style_vis
+      on_vis = arcparal.on_vis or arcparprops.on_vis
+      off_vis = arcparal.off_vis or arcparprops.off_vis
       color_novis = arcparal.color_novis or arcparprops.color_novis
       lw_novis = arcparal.lw_novis or arcparprops.lw_novis
+      style_novis = arcparal.style_novis or arcparprops.style_novis
+      on_novis = arcparal.on_novis or arcparprops.on_novis
+      off_novis = arcparal.off_novis or arcparprops.off_novis
+      
       local ph1 = math.rad(arcparal.phi1D)
       local ph2 = math.rad(arcparal.phi2D)
 
@@ -623,11 +736,23 @@ function M.arcparals(transp, R, obs, arcparprops, arcparals)
 
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(ptos_vis[index],
-			    {color_vis,lw_vis,last_u,last_v,u,v})
+	       table.insert(
+		  ptos_vis[index],
+		  {
+		     color= color_vis, lw = lw_vis,
+		     style = style_vis, on = on_vis, off = off_vis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    elseif transp then
-	       table.insert(ptos_novis[index],
-			    {color_novis, lw_novis, last_u, last_v, u, v})
+	       table.insert(
+		  ptos_novis[index],
+		  {
+		     color = color_novis, lw = lw_novis,
+		     style =style_novis, on = on_novis, off = off_novis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    end -- if vis and last_vis
 	 end -- if i > 0
 	 
@@ -765,6 +890,8 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
    
    for index, arcmax in ipairs(arcosmax) do
       local loops, dist, distmin, distmax, giro
+      local style_vis, on_vis, off_vis
+      local style_novis, on_novis, off_novis
       local th1D, th2D, ph1D, ph2D
       local th1, ph1, th2, ph2, th3, ph3
       local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
@@ -783,8 +910,14 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
       loops = arcmaxprops.loops
       color_vis = arcmax.color_vis or arcmaxprops.color_vis
       lw_vis = arcmax.lw_vis or arcmaxprops.lw_vis
+      style_vis = arcmax.style_vis or arcmaxprops.style_vis
+      on_vis = arcmax.on_vis or arcmaxprops.on_vis
+      off_vis = arcmax.off_vis or arcmaxprops.off_vis
       color_novis = arcmax.color_novis or arcmaxprops.color_novis
       lw_novis = arcmax.lw_novis or arcmaxprops.lw_novis
+      style_novis = arcmax.style_novis or arcmaxprops.style_novis
+      on_novis = arcmax.on_novis or arcmaxprops.on_novis
+      off_novis = arcmax.off_novis or arcmaxprops.off_novis
 
       th1 = math.rad(arcmax.theta1D)
       ph1 = math.rad(arcmax.phi1D)
@@ -956,11 +1089,23 @@ function M.arcsmaximos(transp, R, obs, arcmaxprops, arcosmax)
 	       
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(ptos_vis[index],
-			    {color_vis,lw_vis,last_u,last_v,u,v})
+	       table.insert(
+		  ptos_vis[index],
+		  {
+		     color = color_vis, lw = lw_vis,
+		     style = style_vis, on = on_vis, off = off_vis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    elseif transp then
-	       table.insert(ptos_novis[index],
-			    {color_novis, lw_novis, last_u, last_v, u, v})
+	       table.insert(
+		  ptos_novis[index],
+		  {
+		     color = color_novis, lw = lw_novis,
+		     style = style_vis, on = on_vis, off = off_vis,
+		     last_u = last_u, last_v = last_v, u = u, v = v
+		  }
+	       )
 	    end -- if vis and last_vis
 	 end -- if i > 0
 	 

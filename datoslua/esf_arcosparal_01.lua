@@ -13,8 +13,10 @@ return {
    
    -- 3. Paralelos
    paralprops = {
-      loops = 240, color_vis = "black!80", lw_vis="0.8pt",
+      loops = 240, color_vis = "black!60", lw_vis="0.8pt",
       color_novis = "black!40", lw_novis="0.4pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",      
    },
 
    -- 4. Paralelos
@@ -36,12 +38,14 @@ return {
    arcparprops = {
       loops = 240,
       color_vis = "red", lw_vis = "1.2pt",
-      color_novis = "orange!75", lw_novis = "1pt",
+      color_novis = "orange!75", lw_novis = "0.8pt", 
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",     
    },
 
    arcparals = {
       {thetaD = 60, phi1D = 45, phi2D = 200,},
-      {thetaD = 90, phi1D = 0, phi2D = 60,},
+      {thetaD = 90, phi1D = 0, phi2D = 180,},
       {thetaD = 120, phi1D = -140, phi2D = 40,},
    }
 

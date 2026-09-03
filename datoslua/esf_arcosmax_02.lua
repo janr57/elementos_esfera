@@ -23,6 +23,8 @@ return {
    meridprops = {
       loops = 120, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 
@@ -46,6 +48,8 @@ return {
    paralprops = {
       loops = 240, color_vis = "black!60", lw_vis="0.4pt",
       color_novis = "black!30", lw_novis="0.3pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",
    },
 
    paralelos = {
@@ -67,6 +71,8 @@ return {
       loops = 240,
       color_vis = "red", lw_vis = "1.2pt",
       color_novis = "yellow!50", lw_novis = "0.8pt",
+      style_vis = "linea", on_vis = "", off_vis = "",
+      style_novis = "linea", on_novis = "", off_novis = "",
    },
 
    arcosmax = {
