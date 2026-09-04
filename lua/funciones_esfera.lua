@@ -292,22 +292,44 @@ function M.dibuja_vectores(vects)
    end
 end
 
-function M.dibuja_curvas(ptos_vis)
+function M.dibuja_curvas(curvas)
    local color, lw, estilo, on, off
+   local long_pt, pasos
    local last_u, last_v
    local u, v
-   
-   for ind, curva in ipairs(ptos_vis) do
-      for i, fila in ipairs(curva) do
-	 color = fila.color
-	 lw = fila.lw
-	 estilo = fila.estilo
-	 on = fila.on
-	 off = fila.off
-	 last_u = fila.last_u
-	 last_v = fila.last_v
-	 u = fila.u
-	 v = fila.v
+
+   -- El número de pasos utilizados en la construcción de la curva
+   -- es el número de loops multiplicado por la longitud en cm de la curva
+   -- y dividido entre el perímetro de una circunferencia del radio de la esfera:
+   -- pasos = loops * longitud_cm/(2 pi R)
+   -- De manera que la longitud en puntos (pt) es:
+   -- long_pt = long_cm * 72/2.54 = pasos * 2 pi R * 72 / (2.54 * loops)
+   for ind, curva in ipairs(curvas) do
+      for i, punto in ipairs(curva) do
+	 long_pt = punto.long_pt
+	 pasos = punto.pasos
+	 color = punto.color
+	 lw = punto.lw
+	 estilo = punto.estilo
+	 on = punto.on
+	 off = punto.off
+	 last_u = punto.last_u
+	 last_v = punto.last_v
+	 u = punto.u
+	 v = punto.v
+
+--	 if ind == 1 and i == 1 then
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,3) {(longpt, pasos, elem)= (%.2f, %.2f, %.2f)};",
+--		  long_pt, pasos, #curva
+--	    ))
+--	    tex.sprint(
+--	       string.format(
+--		  "\\node at (3,3) {pasos= %.2f};",
+--		  pasos
+--	    ))
+--	 end
 
 	 if estilo == "linea" then
 	    tex.sprint(string.format(
@@ -315,7 +337,6 @@ function M.dibuja_curvas(ptos_vis)
 			  color, lw, last_u, last_v, u, v
 	    ))
 	 elseif style == "dashed" then
-	 elseif style == "dotted" then
 	 end
       end
    end
@@ -404,7 +425,7 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
    
    for index, meridiano in ipairs(meridianos) do
       local ph
-      local loops, color_vis, lw_vis, color_novis, lw_novis
+      local loops, color_vis, lw_vis, color_novis, lw_novis, dist_pt
       local estilo_vis, on_vis, off_vis
       local estilo_novis, on_novis, off_novis
       local ux,uy,uz,vx,vy,vz
@@ -450,6 +471,10 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
       -- tramo por tramo
       -- Los meridianos tienen longitud pi * R
       -- pasos -> loops * len /(2 pi R) = loops * pi * R /(2 pi R) = loops / 2
+      -- Le llamo distancia porque es un arco de círculo máximo (long = dist)
+      local dist_cm = math.pi * R
+      dist_pt = dist_cm * 72 / 2.54 
+      -- pasos = dist_cm * loops/(2 pi R)= (pi*R*loops)/(2*pi*R) = loops/2
       local pasos = loops / 2
       local last_u, last_v, last_vis
 
@@ -469,6 +494,7 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
 	       table.insert(
 		  ptos_vis[index],
 		  {
+		     long_pt = dist_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
 		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -478,6 +504,7 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
 	       table.insert(
 		  ptos_novis[index],
 		  {
+		     long_pt = dist_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
 		     estilo = estilo_novis, on = on_novis, off = off_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -501,7 +528,7 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
    
    for index, paralelo in ipairs(paralelos) do
       local th = math.rad(paralelo.thetaD)
-      local loops, color_vis, lw_vis, color_novis, lw_novis
+      local loops, color_vis, lw_vis, color_novis, lw_novis, long_pt
       local estilo_vis, on_vis, off_vis
       local estilo_novis, on_novis, off_novis
       
@@ -522,8 +549,17 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
       estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
       estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
 
+      -- Los paralelos no son círculos máximos. Su longitud, menos en el
+      -- ecuador, no indica distancia, por eso le llamaremos 'long',
+      -- en lugar de 'dist'.
+      
       -- Adapta el número de puntos según la longitud de cada paralelo
-      local pasos = math.ceil(loops * math.sin(th))
+      
+      -- long_pt = 2 * math.pi * R * math.sin(th) * 72  / (2 * math.pi * R * 2.54)
+      -- pasos = long_cm * loops/(2 pi R) = loops * sin(th)
+      local long_cm = 2 * math.pi * R * sth
+      long_pt = long_cm * 72 / 2.54
+      local pasos = math.ceil(loops * sth)
       local last_u, last_v, last_vis
 
       for i = 0, pasos do
@@ -542,6 +578,7 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
 	       table.insert(
 		  ptos_vis[index],
 		  {
+		     long_pt = long_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
 		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -551,6 +588,7 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
 	       table.insert(
 		  ptos_novis[index],
 		  {
+		     long_pt = long_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
 		     estilo = estilo_novis, on = on_novis, off = off_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -660,7 +698,7 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
    
    for index, arcparal in ipairs(arcparals) do
       local th = math.rad(arcparal.thetaD)
-      local loops, color_vis, lw_vis, color_novis, lw_novis
+      local loops, color_vis, lw_vis, color_novis, lw_novis, long_pt
       local estilo_vis, on_vis, off_vis
       local estilo_novis, on_novis, off_novis
       local sth = math.sin(th)
@@ -683,8 +721,14 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
       local ph1 = math.rad(arcparal.phi1D)
       local ph2 = math.rad(arcparal.phi2D)
 
+      -- Los arcos de paralelos no son distancias entre puntos porque n
+      -- pertenecen a círculos máximos. Le llamaremos 'long' en lugar de 'dist'.
       -- Adapta el número de puntos según la longitud de cada arco de paralelo
-      local pasos = math.ceil(math.abs(ph2-ph1) * loops * math.sin(th)/(2*math.pi))
+      -- long_cm = R * abs(ph1 - ph2) * sin(th)
+      -- pasos = long_cm * loops / (2 pi R)
+      local long_cm = R * math.abs(ph1-ph2) * sth
+      long_pt = long_cm * 72 / 2.54
+      local pasos = math.ceil(loops * math.abs(ph2-ph1) * sth / (2*math.pi))
       local last_u, last_v, last_vis
       
       for i = 0, pasos do
@@ -703,6 +747,7 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
 	       table.insert(
 		  ptos_vis[index],
 		  {
+		     long_pt = long_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
 		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -712,6 +757,7 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
 	       table.insert(
 		  ptos_novis[index],
 		  {
+		     long_pt = long_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
 		     estilo = estilo_novis, on = on_novis, off = off_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -739,7 +785,7 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
    local R = esf.radio
    
    for index, arcmax in ipairs(arcosmax) do
-      local loops, dist, distmin, distmax, giro
+      local loops, dist_cm, distmin, distmax, giro, dist_pt
       local estilo_vis, on_vis, off_vis
       local estilo_novis, on_novis, off_novis
       local th1D, th2D, ph1D, ph2D
@@ -797,14 +843,14 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
       -- pues en todos los casos se calcula igual:
       distmin = R * math.acos(cth1 * cth2 + sth1 * sth2 * cph1ph2)
       distmax = 2 * math.pi * R - distmin
-      dist = distmin
+      dist_cm = distmin
 
       -- Cálculo del ángulo que forman los puntos 1 y 2
       -- para poder decidir si son puntos antipodales o no:
       -- Cálculo del punto final en el ecuador
       -- Punto inicial (theta = pi/2, phi = 0) o (x=R, y=0, z=0)
       -- delta_phi es igual a omega
-      delta_phi = dist / R
+      delta_phi = dist_cm / R
       
       dot = (x1*x2 + y1*y2 + z1*z2) / (R * R)
       if dot > 1 then dot = 1
@@ -821,7 +867,7 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	 -- Los puntos inicial y final son el mismo: círculo máximo
 	 distmin = 2 * math.pi * R
 	 distmax = distmin
-	 dist = distmax
+	 dist_cm = distmax
 	 -- No contemplo el ángulo cero, sino 2pi
 	 omega = 2 * math.pi
 	 delta_phi = omega
@@ -866,20 +912,22 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	 end
       else
 	 -- Los puntos no son antipodales: forman un arco.
-	 
+
+	 -- Indica cómo se gira, para que se considere la menor "m" o mayor
+	 -- distancia "M" entre los puntos del arco máximo.
 	 giro = arcmax.giro
 
 	 -- Si queremos el arco mayor, hay que cambiar la distancia entre 1 y 2
 	 -- en este caso (esto no ocutre cuando son antipodales)
 	 if giro == "M" then
 	    -- Si hemos elegido el arco de círculo máximo, la distancia es mayor
-	    dist = distmax
+	    dist_cm = distmax
 	    omega = omegamax
 	    delta_phi = omega
 	    signo_bucle = -1
 	    vec_u, vec_v, vec_w = M.matriz_transformacion(x2, y2, z2, x1, y1, z1, R)
 	 elseif giro == "m" then
-	    dist = distmin
+	    dist_cm = distmin
 	    omega = omegamin
 	    delta_phi = omega
 	    signo_bucle = 1
@@ -898,17 +946,24 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
       wx = vec_w[1]
       wy = vec_w[2]
       wz = vec_w[3]
-      
+
+
+      dist_pt = dist_cm * 72 / 2.54
       -- Adapta el número de puntos según la longitud de cada segmento
-      pasos = math.ceil(loops * dist /(2 * math.pi * R))
+      -- pasos = dist_cm * loops/(2 pi R)
+      pasos = math.ceil(loops * dist_cm /(2 * math.pi * R))
 
       theta = math.pi/2
       sth = math.sin(theta)
       cth = math.cos(theta)
 
+
+      -- Esta componente z es la misma para cada paso del bucle, que depende
+      -- solo del ángulo phi, por lo que la sacamos fuera del mismo.
+      cz = R * cth
+
       -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
       -- tramo por tramo
-      cz = R * cth
       
       for i = 0, pasos do
 
@@ -916,7 +971,8 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	 
 	 cx = R * sth * math.cos(phi)
 	 cy = R * sth * math.sin(phi)
---	 cz = R * cth
+	 -- Componente z sacada fuera del bucle.
+	 --cz = R * cth
 
 	 -- Aplicamos la matriz de transformación
 	 xp = cx*ux + cy*vx + cz*wx
@@ -930,6 +986,7 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	       table.insert(
 		  ptos_vis[index],
 		  {
+		     long_pt = dist_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
 		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
@@ -939,6 +996,7 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	       table.insert(
 		  ptos_novis[index],
 		  {
+		     long_pt = dist_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
 		     estilo = estilo_vis, on = on_vis, off = off_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
