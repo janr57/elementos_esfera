@@ -3,7 +3,7 @@
 return {
    -- 1. Datos y propiedades de la esfera:
    esfera = {
-      radio = 2.0, loops = 240,
+      radio = 2.0, loops = 360,
       draw = "black!25", lw = "0.6pt", fill = "black!8", opac = 1.0,
    },
 
@@ -12,25 +12,25 @@ return {
    
    -- 3. Meridianos
    meridprops = {
-      color_vis = "black!60", lw_vis = "0.8pt", estilo_vis = "dashed(3pt,4pt)",
-      color_novis = "black!40", lw_novis = "0.4pt", estilo_novis = "linea",
+      color_vis = "black!60", lw_vis = "0.8pt", estilo_vis = "linea",
+      color_novis = "black!40", lw_novis = "0.6pt", estilo_novis = "dashed(3)",
    },
 
    -- Si se quiere modificar el estilo de algún meridiano en particular, se 
    -- puede añadir el estilo deseado en el elemento correspondiente de la tabla:
    meridianos = {
       {phiD = 0,},
---      {phiD = 30},
---      {phiD = 60},
---      {phiD = 90},
---      {phiD = 120},
---      {phiD = 150},
---      {phiD = 180},
---      {phiD = -30},
---      {phiD = -60},
---      {phiD = -90},
---      {phiD = -120},
---      {phiD = -150}
+      {phiD = 30},
+      {phiD = 60},
+      {phiD = 90},
+      {phiD = 120},
+      {phiD = 150},
+      {phiD = 180},
+      {phiD = -30},
+      {phiD = -60},
+      {phiD = -90},
+      {phiD = -120},
+      {phiD = -150}
    },
 }
 

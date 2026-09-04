@@ -9,7 +9,7 @@ return {
 
    -- 1. Datos y propiedades de la esfera:
    esfera = {
-      radio = 2.0, loops = 240,
+      radio = 2.0, loops = 360,
       draw = "black!25", lw = "0.6pt", fill = "black!8", opac = 1.0,
    },
 

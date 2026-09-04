@@ -122,6 +122,7 @@ function M.dibuja_tikzesfera(transp, esc)
       arcmax_vis, arcmax_novis = M.arcsmaximos(transp,esf,obs,arcmaxprops,arcosmax)
       
       if transp then
+	 tex.sprint("Pasa por transp")
 	 M.dibuja_curvas(arcmax_novis)
       end
       
@@ -212,18 +213,30 @@ function M.separar_dimension(dim)
    end
 end
 
-
-function M.procesar_estilo(str)
-   local estilo, d1, d2
-   
-   estilo, d1, d2 = str:match("^%s*(.-)%((%d+)pt%s*,%s*(%d+)pt%)%s*$")
-
-   if estilo and d1 and d2 then
-      return estilo, tonumber(d1), tonumber(d2)
-   end
-
-   return str:match("^%s*(.-)%s*$"), 0, 0
+function M.procesar_estilo(cadena)
+    -- Busca un patrón de texto seguido de un número entre paréntesis al final
+    local texto, numero = string.match(cadena, "^(.-)%s*%((%d+)%)%s*$")
+    
+    if texto and numero then
+        -- Si encuentra ambos, limpia los espacios del texto y convierte el número
+        return texto, tonumber(numero)
+    else
+        -- Si no hay paréntesis con números, devuelve la cadena original y 0
+        return cadena, 0
+    end
 end
+
+--function M.procesar_estilo(str)
+--   local estilo, d1, d2
+--   
+--   estilo, d1, d2 = str:match("^%s*(.-)%((%d+)pt%s*,%s*(%d+)pt%)%s*$")
+--
+--   if estilo and d1 and d2 then
+--      return estilo, tonumber(d1), tonumber(d2)
+--   end
+--
+--   return str:match("^%s*(.-)%s*$"), 0, 0
+--end
 
 function M.tablelength(T)
   local count = 0
@@ -293,11 +306,11 @@ function M.dibuja_vectores(vects)
 end
 
 function M.dibuja_curvas(curvas)
-   local color, lw, estilo, on, off
+   local color, lw, estilo, N
    local long_pt, pasos, dim_pts
    local last_u, last_v
    local u, v
-
+   
    -- El número de pasos utilizados en la construcción de la curva
    -- es el número de loops multiplicado por la longitud en cm de la curva
    -- y dividido entre el perímetro de una circunferencia del radio de la esfera:
@@ -306,61 +319,34 @@ function M.dibuja_curvas(curvas)
    -- long_pt = long_cm * 72/2.54 = pasos * 2 pi R * 72 / (2.54 * loops)
    for ind, curva in ipairs(curvas) do
       for i, punto in ipairs(curva) do
-	 -- La longitud total es la de TODA la curva, pero parte de ella será
-	 -- visible y parte no. Nos interesa la longitud parcial de la curva.
-	 local longparcial_pt
-	 -- En esta función estamos interesados en una parte
+	 N = punto.N
 	 long_pt = punto.long_pt
 	 pasos = punto.pasos
 	 color = punto.color
 	 lw = punto.lw
 	 estilo = punto.estilo
-	 on = punto.on
-	 off = punto.off
 	 last_u = punto.last_u
 	 last_v = punto.last_v
 	 u = punto.u
 	 v = punto.v
-
---	 if ind == 1 and i == 1 then
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,3) {(longpt, pasos, elem)= (%.2f, %.2f, %.2f)};",
---		  longtotal_pt, pasos, #curva
---	    ))
---	    tex.sprint(
---	       string.format(
---		  "\\node at (3,3) {pasos= %.2f};",
---		  pasos
---	    ))
---	 end
-
+	 
 	 if estilo == "linea" then
 	    tex.sprint(string.format(
 			  "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
 			  color, lw, last_u, last_v, u, v
 	    ))
 	 elseif estilo == "dashed" then
-	    longparcial_pt = long_pt * #curva / pasos
-	    local entera, decimal = math.modf(longparcial_pts / (on + off))
-
-	    if ind == 1 and i == 1 then
-	    tex.sprint(
-	       string.format(
-		  "\\node at (3,3) {(longpt,pasos,lencurva,dimpts)= (%.2f, %.2f, %.2f, %f)};",
-		  long_pt, pasos, #curva, long_pts
-	    ))
-	    
-	    tex.sprint(
-	       string.format(
-		  "\\node at (3,2.5) {(on,off)= (%.2f, %.2f)};",
-		  on, off
-	    ))	       
+	    if i % (2 * N) >= 1 and i % (2 * N) <= N then
+	       tex.sprint(string.format(
+			     "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
+			     color, lw, last_u, last_v, u, v
+	       ))
 	    end
 	 end
       end
    end
 end
+
 
 function M.dibuja_esfera(esf)
    local R = esf.radio
@@ -446,8 +432,8 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
    for index, meridiano in ipairs(meridianos) do
       local ph
       local loops, color_vis, lw_vis, color_novis, lw_novis, dist_pt
-      local estilo_vis, on_vis, off_vis
-      local estilo_novis, on_novis, off_novis
+      local estilo_vis, N_vis
+      local estilo_novis, N_novis
       local ux,uy,uz,vx,vy,vz
 
       table.insert(ptos_vis, {})
@@ -462,8 +448,8 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
       lw_novis = meridiano.lw_novis or meridprops.lw_novis
       estilo_novis = meridiano.estilo_novis or meridprops.estilo_novis
 
-      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
-      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
+      estilo_vis, N_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, N_novis = M.procesar_estilo(estilo_novis)
       
       local ux, uy, uz
       if math.abs(omega - math.pi) < 1e-5 then
@@ -516,7 +502,7 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
 		  {
 		     long_pt = dist_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, N = N_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -526,7 +512,7 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
 		  {
 		     long_pt = dist_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, on = on_novis, off = off_novis,
+		     estilo = estilo_novis, N = N_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -549,8 +535,8 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
    for index, paralelo in ipairs(paralelos) do
       local th = math.rad(paralelo.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis, long_pt
-      local estilo_vis, on_vis, off_vis
-      local estilo_novis, on_novis, off_novis
+      local estilo_vis, N_vis
+      local estilo_novis, N_novis
       
       local sth = math.sin(th)
       local cth = math.cos(th)
@@ -566,9 +552,9 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
       lw_novis = paralelo.lw_novis or paralprops.lw_novis
       estilo_novis = paralelo.estilo_novis or paralprops.estilo_novis
 
-      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
-      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
-
+      estilo_vis, N_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, N_novis = M.procesar_estilo(estilo_novis)
+      
       -- Los paralelos no son círculos máximos. Su longitud, menos en el
       -- ecuador, no indica distancia, por eso le llamaremos 'long',
       -- en lugar de 'dist'.
@@ -600,7 +586,7 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
 		  {
 		     long_pt = long_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, N = N_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -610,7 +596,7 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
 		  {
 		     long_pt = long_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, on = on_novis, off = off_novis,
+		     estilo = estilo_novis, N = N_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -719,8 +705,8 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
    for index, arcparal in ipairs(arcparals) do
       local th = math.rad(arcparal.thetaD)
       local loops, color_vis, lw_vis, color_novis, lw_novis, long_pt
-      local estilo_vis, on_vis, off_vis
-      local estilo_novis, on_novis, off_novis
+      local estilo_vis, N_vis
+      local estilo_novis, N_novis
       local sth = math.sin(th)
       local cth = math.cos(th)
 
@@ -735,8 +721,8 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
       lw_novis = arcparal.lw_novis or arcparprops.lw_novis
       estilo_novis = arcparal.estilo_vis or arcparprops.estilo_novis
 
-      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
-      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
+      estilo_vis, N_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, N_novis = M.procesar_estilo(estilo_novis)
       
       local ph1 = math.rad(arcparal.phi1D)
       local ph2 = math.rad(arcparal.phi2D)
@@ -769,7 +755,7 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
 		  {
 		     long_pt = long_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, N = N_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -779,7 +765,7 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
 		  {
 		     long_pt = long_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, on = on_novis, off = off_novis,
+		     estilo = estilo_novis, N = N_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
@@ -806,8 +792,7 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
    
    for index, arcmax in ipairs(arcosmax) do
       local loops, dist_cm, distmin, distmax, giro, dist_pt
-      local estilo_vis, on_vis, off_vis
-      local estilo_novis, on_novis, off_novis
+      local estilo_vis, estilo_novis, N_vis, N_novis
       local th1D, th2D, ph1D, ph2D
       local th1, ph1, th2, ph2, th3, ph3
       local sth1, cth1, sph1, cph1, sth2, cth2, sph2, sph2, cph1ph2
@@ -830,8 +815,26 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
       lw_novis = arcmax.lw_novis or arcmaxprops.lw_novis
       estilo_novis = arcmax.estilo_novis or arcmaxprops.estilo_novis
 
-      estilo_vis, on_vis, off_vis = M.procesar_estilo(estilo_vis)
-      estilo_novis, on_novis, off_novis = M.procesar_estilo(estilo_novis)
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,3) {(estilovis, estilonovis)= (%s, %s)};",
+--	    estilo_vis, estilo_novis
+--      ))
+
+      estilo_vis, N_vis = M.procesar_estilo(estilo_vis)
+      estilo_novis, N_novis = M.procesar_estilo(estilo_novis)
+
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,2.5) {(estilovis, Nvis)= (%s, %.2f)};",
+--	    estilo_vis, N_vis
+--      ))
+--      tex.sprint(
+--	 string.format(
+--	    "\\node at (3,2) {(estilonovis, Nnovis)= (%s, %.2f)};",
+--	    estilo_novis, N_novis
+--      ))
+      
 
       th1 = math.rad(arcmax.theta1D)
       ph1 = math.rad(arcmax.phi1D)
@@ -1000,7 +1003,7 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	 zp = cx*uz + cy*vz + cz*wz
 	 
 	 u, v, vis = M.calcular_punto_y_visibilidad(xp, yp, zp, obs)
-	       
+	 
 	 if i > 0 then
 	    if vis and last_vis then
 	       table.insert(
@@ -1008,17 +1011,23 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 		  {
 		     long_pt = dist_pt, pasos = pasos,
 		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_vis, N = N_vis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )
 	    elseif transp then
+--	       if i == 0 then
+--		  tex.sprint(
+--		     string.format(
+--			"\\node at (3,1) {N_novis= %.2f};", N_novis
+--		  ))
+--	       end
 	       table.insert(
 		  ptos_novis[index],
 		  {
 		     long_pt = dist_pt, pasos = pasos,
 		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_vis, on = on_vis, off = off_vis,
+		     estilo = estilo_novis, N = N_novis,
 		     last_u = last_u, last_v = last_v, u = u, v = v
 		  }
 	       )

@@ -3,7 +3,7 @@
 return {
    -- 1. Datos y propiedades de la esfera:
    esfera = {
-      radio = 2.0, loops = 240,
+      radio = 2.0, loops = 360,
       draw = "black!25", lw = "0.6pt", fill = "black!8", opac = 1.0,
    },
 
@@ -35,9 +35,8 @@ return {
 
    -- 6. Arcos de paalelos
    arcparprops = {
-      loops = 240,
       color_vis = "red", lw_vis = "1.2pt", estilo_vis = "linea",
-      color_novis = "orange", lw_novis = "0.8pt", estilo_novis = "linea",
+      color_novis = "red!80", lw_novis = "1pt", estilo_novis = "dashed(3)",
    },
 
    arcparals = {

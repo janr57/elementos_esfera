@@ -3,7 +3,8 @@
 return {
    -- 1. Datos y propiedades de la esfera:
    esfera = {
-      radio=2.0, draw="black!25", lw="0.6pt", fill="black!8", opac=1.0,
+      radio = 2.0, loops = 360,
+      draw = "black!25", lw = "0.6pt", fill = "black!8", opac = 1.0,
    },
 
    -- 2, Posición angular del observador
@@ -11,9 +12,8 @@ return {
    
    -- 3. Paralelos
    paralprops = {
-      loops = 240,
-      color_vis = "black!60", lw_vis="0.4pt", estilo_vis = "linea",
-      color_novis = "black!30", lw_novis="0.3pt", estilo_novis = "linea",
+      color_vis = "black!60", lw_vis = "0.4pt", estilo_vis = "linea",
+      color_novis = "black!30", lw_novis = "0.3pt", estilo_novis = "dashed(2)",
    },
 
    -- 4. Paralelos
