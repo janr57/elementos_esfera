@@ -294,7 +294,7 @@ end
 
 function M.dibuja_curvas(curvas)
    local color, lw, estilo, on, off
-   local long_pt, pasos
+   local long_pt, pasos, dim_pts
    local last_u, last_v
    local u, v
 
@@ -306,6 +306,10 @@ function M.dibuja_curvas(curvas)
    -- long_pt = long_cm * 72/2.54 = pasos * 2 pi R * 72 / (2.54 * loops)
    for ind, curva in ipairs(curvas) do
       for i, punto in ipairs(curva) do
+	 -- La longitud total es la de TODA la curva, pero parte de ella será
+	 -- visible y parte no. Nos interesa la longitud parcial de la curva.
+	 local longparcial_pt
+	 -- En esta función estamos interesados en una parte
 	 long_pt = punto.long_pt
 	 pasos = punto.pasos
 	 color = punto.color
@@ -322,7 +326,7 @@ function M.dibuja_curvas(curvas)
 --	    tex.sprint(
 --	       string.format(
 --		  "\\node at (3,3) {(longpt, pasos, elem)= (%.2f, %.2f, %.2f)};",
---		  long_pt, pasos, #curva
+--		  longtotal_pt, pasos, #curva
 --	    ))
 --	    tex.sprint(
 --	       string.format(
@@ -336,7 +340,23 @@ function M.dibuja_curvas(curvas)
 			  "\\draw[%s,line width=%s] (%f, %f) -- (%f, %f);",
 			  color, lw, last_u, last_v, u, v
 	    ))
-	 elseif style == "dashed" then
+	 elseif estilo == "dashed" then
+	    longparcial_pt = long_pt * #curva / pasos
+	    local entera, decimal = math.modf(longparcial_pts / (on + off))
+
+	    if ind == 1 and i == 1 then
+	    tex.sprint(
+	       string.format(
+		  "\\node at (3,3) {(longpt,pasos,lencurva,dimpts)= (%.2f, %.2f, %.2f, %f)};",
+		  long_pt, pasos, #curva, long_pts
+	    ))
+	    
+	    tex.sprint(
+	       string.format(
+		  "\\node at (3,2.5) {(on,off)= (%.2f, %.2f)};",
+		  on, off
+	    ))	       
+	    end
 	 end
       end
    end

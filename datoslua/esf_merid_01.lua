@@ -12,8 +12,7 @@ return {
    
    -- 3. Meridianos
    meridprops = {
---      loops = 120,
-      color_vis = "black!60", lw_vis = "0.8pt", estilo_vis = "linea",
+      color_vis = "black!60", lw_vis = "0.8pt", estilo_vis = "dashed(3pt,4pt)",
       color_novis = "black!40", lw_novis = "0.4pt", estilo_novis = "linea",
    },
 
@@ -21,17 +20,17 @@ return {
    -- puede añadir el estilo deseado en el elemento correspondiente de la tabla:
    meridianos = {
       {phiD = 0,},
-      {phiD = 30},
-      {phiD = 60},
-      {phiD = 90},
-      {phiD = 120},
-      {phiD = 150},
-      {phiD = 180},
-      {phiD = -30},
-      {phiD = -60},
-      {phiD = -90},
-      {phiD = -120},
-      {phiD = -150}
+--      {phiD = 30},
+--      {phiD = 60},
+--      {phiD = 90},
+--      {phiD = 120},
+--      {phiD = 150},
+--      {phiD = 180},
+--      {phiD = -30},
+--      {phiD = -60},
+--      {phiD = -90},
+--      {phiD = -120},
+--      {phiD = -150}
    },
 }
 
