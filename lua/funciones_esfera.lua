@@ -484,6 +484,16 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
       local pasos = loops / 2
       local last_u, last_v, last_vis
 
+      local parm_vis = {
+	 long_pt = dist_pt, pasos = pasos, color = color_vis, lw = lw_vis,
+	 estilo = estilo_vis, N = N_vis, ptos = ptos_vis,
+      }
+
+      local parm_novis = {
+	 long_pt = dist_pt, pasos = pasos, color = color_novis, lw = lw_novis,
+	 estilo = estilo_novis, N = N_novis, ptos = ptos_novis,
+      }
+      
       for i = 0, pasos do
 	 local t = i / pasos
 	 local current_angle = t * omega
@@ -497,31 +507,16 @@ function M.meridianos(transp, esf, obs, meridprops, meridianos)
 	 -- Solo será visible el segmento si AMBOS extremos del tramo son visibles
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(
-		  ptos_vis[index],
-		  {
-		     long_pt = dist_pt, pasos = pasos,
-		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, N = N_vis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
+	       M.completa_tabla_curvas(index, parm_vis, last_u, last_v, u, v)
 	    elseif transp then
-	       table.insert(
-		  ptos_novis[index],
-		  {
-		     long_pt = dist_pt, pasos = pasos,
-		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, N = N_novis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
+	       M.completa_tabla_curvas(index, parm_novis, last_u, last_v, u, v)
 	    end
 	 end
+
 	 last_u, last_v, last_vis = u, v, vis
       end -- (for i = 0, pasos)
    end -- (for index, meridiano)
-
+   
    return ptos_vis, ptos_novis
 end
 
@@ -568,6 +563,16 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
       local pasos = math.ceil(loops * sth)
       local last_u, last_v, last_vis
 
+      local parm_vis = {
+	 long_pt = long_pt, pasos = pasos, color = color_vis, lw = lw_vis,
+	 estilo = estilo_vis, N = N_vis, ptos = ptos_vis,
+      }
+
+      local parm_novis = {
+	 long_pt = long_pt, pasos = pasos, color = color_novis, lw = lw_novis,
+	 estilo = estilo_novis, N = N_novis, ptos = ptos_novis,
+      }
+      
       for i = 0, pasos do
 	 -- Variamos ph de 0 a 360 grados
 	 local ph = i * 2 * math.pi/pasos
@@ -581,27 +586,11 @@ function M.paralelos(transp, esf, obs, paralprops, paralelos)
 
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(
-		  ptos_vis[index],
-		  {
-		     long_pt = long_pt, pasos = pasos,
-		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, N = N_vis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
+	       M.completa_tabla_curvas(index, parm_vis, last_u, last_v, u, v)
 	    elseif transp then
-	       table.insert(
-		  ptos_novis[index],
-		  {
-		     long_pt = long_pt, pasos = pasos,
-		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, N = N_novis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
-	    end -- if vis and last_vis
-	 end -- if i > 0
+	       M.completa_tabla_curvas(index, parm_novis, last_u, last_v, u, v)
+	    end
+	 end
 	 
 	 last_u, last_v, last_vis = u, v, vis
 	 
@@ -736,6 +725,16 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
       long_pt = long_cm * 72 / 2.54
       local pasos = math.ceil(loops * math.abs(ph2-ph1) * sth / (2*math.pi))
       local last_u, last_v, last_vis
+
+      local parm_vis = {
+	 long_pt = long_pt, pasos = pasos, color = color_vis, lw = lw_vis,
+	 estilo = estilo_vis, N = N_vis, ptos = ptos_vis,
+      }
+
+      local parm_novis = {
+	 long_pt = long_pt, pasos = pasos, color = color_novis, lw = lw_novis,
+	 estilo = estilo_novis, N = N_novis, ptos = ptos_novis,
+      }
       
       for i = 0, pasos do
 	 -- Variamos ph de ph1 a ph2 radianes
@@ -747,30 +746,14 @@ function M.arcparals(transp, esf, obs, arcparprops, arcparals)
 	 local z = R * cth
 	 
 	 local u, v, vis = M.calcular_punto_y_visibilidad(x, y, z, obs)
-
+	 
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(
-		  ptos_vis[index],
-		  {
-		     long_pt = long_pt, pasos = pasos,
-		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, N = N_vis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
+	       M.completa_tabla_curvas(index, parm_vis, last_u, last_v, u, v)
 	    elseif transp then
-	       table.insert(
-		  ptos_novis[index],
-		  {
-		     long_pt = long_pt, pasos = pasos,
-		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, N = N_novis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
-	    end -- if vis and last_vis
-	 end -- if i > 0
+	       M.completa_tabla_curvas(index, parm_novis, last_u, last_v, u, v)
+	    end
+	 end
 	 
 	 last_u, last_v, last_vis = u, v, vis
 	 
@@ -815,26 +798,8 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
       lw_novis = arcmax.lw_novis or arcmaxprops.lw_novis
       estilo_novis = arcmax.estilo_novis or arcmaxprops.estilo_novis
 
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,3) {(estilovis, estilonovis)= (%s, %s)};",
---	    estilo_vis, estilo_novis
---      ))
-
       estilo_vis, N_vis = M.procesar_estilo(estilo_vis)
       estilo_novis, N_novis = M.procesar_estilo(estilo_novis)
-
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,2.5) {(estilovis, Nvis)= (%s, %.2f)};",
---	    estilo_vis, N_vis
---      ))
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,2) {(estilonovis, Nnovis)= (%s, %.2f)};",
---	    estilo_novis, N_novis
---      ))
-      
 
       th1 = math.rad(arcmax.theta1D)
       ph1 = math.rad(arcmax.phi1D)
@@ -987,7 +952,17 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 
       -- Muestreamos el arco en segmentos individuales para evaluar visibilidad
       -- tramo por tramo
-      
+
+      local parm_vis = {
+	 long_pt = dist_pt, pasos = pasos, color = color_vis, lw = lw_vis,
+	 estilo = estilo_vis, N = N_vis, ptos = ptos_vis,
+      }
+
+      local parm_novis = {
+	 long_pt = dist_pt, pasos = pasos, color = color_novis, lw = lw_novis,
+	 estilo = estilo_novis, N = N_novis, ptos = ptos_novis,
+      }
+
       for i = 0, pasos do
 
 	 phi = (i * signo_bucle * omega /pasos) % (2 * math.pi)
@@ -1006,33 +981,11 @@ function M.arcsmaximos(transp, esf, obs, arcmaxprops, arcosmax)
 	 
 	 if i > 0 then
 	    if vis and last_vis then
-	       table.insert(
-		  ptos_vis[index],
-		  {
-		     long_pt = dist_pt, pasos = pasos,
-		     color = color_vis, lw = lw_vis,
-		     estilo = estilo_vis, N = N_vis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
+	       M.completa_tabla_curvas(index, parm_vis, last_u, last_v, u, v)
 	    elseif transp then
---	       if i == 0 then
---		  tex.sprint(
---		     string.format(
---			"\\node at (3,1) {N_novis= %.2f};", N_novis
---		  ))
---	       end
-	       table.insert(
-		  ptos_novis[index],
-		  {
-		     long_pt = dist_pt, pasos = pasos,
-		     color = color_novis, lw = lw_novis,
-		     estilo = estilo_novis, N = N_novis,
-		     last_u = last_u, last_v = last_v, u = u, v = v
-		  }
-	       )
-	    end -- if vis and last_vis
-	 end -- if i > 0
+	       M.completa_tabla_curvas(index, parm_novis, last_u, last_v, u, v)
+	    end
+	 end
 	 
 	 last_u, last_v, last_vis = u, v, vis
 	 
@@ -1054,19 +1007,13 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
    local ptosprops = tblprops[1]
    local plnsprops = tblprops[2]
    local vectsprops = tblprops[3]
-
+   
    for index, ppv in ipairs(ppvs) do
       local x, y, z
       local u, v, vis
       local punto = ppv.punto
       local plano = ppv.plano
       local vects = ppv.vects
-      
---      if index == 1 then
---	 tex.sprint("\\node at (3,5) {index 1};")
---      elseif index == 2 then
---	 tex.sprint("\\node at (3,4.5) {index 2};")
-      --      end
       
       -- PUNTO
       -- Propiedades tomadas de los datos
@@ -1075,13 +1022,13 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local pto_dibuja = punto.dibuja or ptosprops.dibuja
       local pto_color = punto.color or ptosprops.color
       local pto_radio = punto.radio or ptosprops.radio
-
+      
       -- Cálculos previos para no repetirlos varias veces cuando se necesiten
       local sth = math.sin(th)
       local cth = math.cos(th)
       local sph = math.sin(ph)
       local cph = math.cos(ph)
-
+      
       -- El punto se situa en la coordenada r = R, theta = 90, phi = 0
       -- Coordenadas cartesianas del punto en la posición ecuatorial
       local ptox, ptoy, ptoz
@@ -1103,7 +1050,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       -- Guarda las coordenadas en patalla del punto para los vectores
       local pto_u = u
       local pto_v = v
-
+      
       -- PLANO
       -- Características tomadas de los datos
       local pln_draw = plano.draw or plnsprops.draw
@@ -1113,11 +1060,7 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
       local pln_alto = plano.alto
       local pln_giro = math.rad(plano.giro_planoD or plnsprops.giro_planoD)
       local pln_dibuja = plano.dibuja or plnsprops.dibuja
-
---      tex.sprint(
---	 string.format(
---	    "\\node at (3,-2) {plnopac= %.2f};", pln_opac
---      ))
+      
       -- Punto 1 del plano
       -- Coordenadas cartesianas respecto de la posición en el ecuador
       -- del primer punto del plano
@@ -1186,16 +1129,9 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
 	 )
 	 
       end
-
+      
       -- VECTORES
       -- En cada entrada de punto hay un plano, pero puede haber muchos vectores
---      table.insert(vects_vis, {})
-
---      tex.sprint("\\node at (3,5) {Llega aquí};")
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,4.5) {vectslen= %.2f};]], #vects
---      ))
       
       for indvect, vect in ipairs(vects) do
 	 local vect_color = vect.color or vectsprops.color
@@ -1206,91 +1142,53 @@ function M.ppvs(transp, R, obs, tblprops, ppvs)
 	 local vect_mod = vect.mod
 	 local vect_ang = math.rad(vect.angD)
 	 
---	 tex.sprint(
---	    string.format(
---	       [[\node at (3,4) {(vectcolor,vectdibuja)= (%s, %s)};]],
---	       vect_color, vect_dibuja
---	 ))
---	 if indvect == 1 then
---	    tex.sprint(
---	       string.format(
---		  [[\node at (3,3.5) {(mod,ang)= (%.2f, %.2f)};]],
---		  vect_mod, vect_ang
---	    ))
---	 elseif indvect == 2 then
---	    tex.sprint(
---	       string.format(
---		  [[\node at (3,3) {(mod,ang)= (%.2f, %.2f)};]],
---		  vect_mod, vect_ang
---	    ))
---	 end
-
 	 -- Coordenadas del extremo del vector
 	 local vx, vy, vz
 	 vx = pto_x
 	 vy = pto_y + vect_mod * math.cos(vect_ang)
 	 vz = pto_z + vect_mod * math.sin(vect_ang)
-
+	 
 	 -- Giramos el vector de acuerdo con el ángulo de giro para el plano
 	 vy = vy * math.cos(pln_giro) - vz * math.sin(pln_giro)
 	 vz = vy * math.sin(pln_giro) + vz * math.cos(pln_giro)
 	 
---	 tex.sprint(
---	    string.format(
---	       [[\node at (3,4) {(vx,vy,vz)= (%.2f, %.2f, %.2f)};]],
---	       vx, vy, vz
---	 ))
-
-      -- Nuevas coordenadas cartesianas del vector en la posición final
-      --local x3, y3, z3
-      vx, vy, vz = M.giro_theta_phi(vx, vy, vz, giro_theta, giro_phi)
-
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,3.5) {(vx,vy,vz)= (%.2f, %.2f, %.2f)};]],
---	    vx, vy, vz
---      ))
-      
---      local vu, vv, vvis
-      u, v, vis = M.calcular_punto_y_visibilidad(vx, vy, vz, obs)
-
---      tex.sprint(
---	 string.format(
---	    [[\node at (3,3) {(u,v,vis)= (%.2f, %.2f, %s)};]],
---	    u, v, vis
---      ))
-
-      if vect_dibuja and pto_dibuja then
-	 table.insert(vects_vis,
-		      {
-			 color= vect_color, lw= vect_lw,
-			 arrow_length= vect_arrow_length,
-			 arrow_width = vect_arrow_width,
-			 ou= pto_u, ov = pto_v,
-			 u= u, v= v,
-		      }
-	 )
+	 -- Nuevas coordenadas cartesianas del vector en la posición final
+	 vx, vy, vz = M.giro_theta_phi(vx, vy, vz, giro_theta, giro_phi)
 	 
-      end
-      
-      
+	 u, v, vis = M.calcular_punto_y_visibilidad(vx, vy, vz, obs)
+	 
+	 if vect_dibuja and pto_dibuja then
+	    table.insert(vects_vis,
+			 {
+			    color= vect_color, lw= vect_lw,
+			    arrow_length= vect_arrow_length,
+			    arrow_width = vect_arrow_width,
+			    ou= pto_u, ov = pto_v,
+			    u= u, v= v,
+			 }
+	    )
+	 end	 
       end
       
    end
-
---   tex.sprint(
---      string.format(
---	 "\\node at (3,4) {ptosvislen= %.2f};", #ptos_vis
---   ))
---   tex.sprint(
---      string.format(
---	 "\\node at (3,3.5) {plnsvislen= %.2f};", #plns_vis
---   ))
    
    return ptos_vis, plns_vis, vects_vis
 end
 
 -- ----------------------------------------------------------------------------
+
+-- ----------------------------------------------------------------------------
+function M.completa_tabla_curvas(index, parm, last_u, last_v, u, v)
+   table.insert(
+      parm.ptos[index],
+      {
+	 long_pt = parm.long_pt, pasos = parm.pasos,
+	 color = parm.color, lw = parm.lw,
+	 estilo = parm.estilo, N = parm.N,
+	 last_u = last_u, last_v = last_v, u = u, v = v
+      }
+   )
+end
 
 --x, y, z = M.giro_theta_phi(x, y, z, girotheta, girophi)
 function M.giro_theta_phi(x, y, z, th, ph)
@@ -1366,22 +1264,6 @@ function M.calcular_punto_y_visibilidad(x, y, z, obs)
     local visible = (x * z_hat_x + y * z_hat_y + z * z_hat_z) > -1e-5
     -- -1e-5 es la tolerancia matemática
 
---    -- 1. Dirección del observador (Eje Z de la pantalla)
---    local z_hat_x = math.sin(th_obs) * math.cos(ph_obs)
---    local z_hat_y = math.sin(th_obs) * math.sin(ph_obs)
---    local z_hat_z = math.cos(th_obs)
---
---    -- 2. Ejes de la pantalla 2D (u, v)
---    local u_hat_x, u_hat_y, u_hat_z = -math.sin(ph_obs), math.cos(ph_obs), 0
---    local v_hat_x = -math.cos(th_obs) * math.cos(ph_obs)
---    local v_hat_y = -math.cos(th_obs) * math.sin(ph_obs)
---    local v_hat_z = math.sin(th_obs)
---
---    -- 3. Productos escalares
---    local u = x * u_hat_x + y * u_hat_y + z * u_hat_z
---    local v = x * v_hat_x + y * v_hat_y + z * v_hat_z
---    local visible = (x * z_hat_x + y * z_hat_y + z * z_hat_z) > -1e-5 -- Tolerancia matemática
-    
     return u, v, visible
 end
 -- ----------------------------------------------------------------------------
